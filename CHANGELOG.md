@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Materialized the accepted public projection as a clean local Git source and proved the committed 0.0.32 tree from a fresh offline clone with locked dependency installation, the complete test/build/install/smoke suite, and a zero-finding production dependency audit. The reproducible-source gate now passes while exact-candidate lifecycle, host, hosted, remote, release, and Community-submission gates remain open.
+
 ## 0.0.32 - 2026-08-14
 
 - Made explicit presentation-setting changes apply immediately to exact plugin-owned rendered containers and made compact density visibly tighten card spacing while preserving control size and focus treatment.

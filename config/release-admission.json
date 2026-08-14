@@ -41,16 +41,16 @@
     {
       "id": "reproducible-public-source",
       "label": "Reproducible public-source candidate",
-      "state": "pending",
+      "state": "pass",
       "requiredForPublicRelease": true,
       "evidence": [
         "config/public-source-policy.json",
+        "docs/maintainers/public-source-boundary.md",
+        "package-lock.json",
         "scripts/verify-clean-room.mjs",
         "scripts/verify-public-source-boundary.mjs"
       ],
-      "unresolved": [
-        "Accept, revise, or hold the exact provider-neutral public projection through its human disclosure review packet before materializing a clean repository"
-      ]
+      "unresolved": []
     },
     {
       "id": "hosted-assurance",

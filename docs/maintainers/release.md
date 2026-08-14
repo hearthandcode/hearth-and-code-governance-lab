@@ -15,6 +15,8 @@ Run `npm run proof:interoperability` to verify the provider-neutral specificatio
 1. Confirm the accepted public name and immutable plugin ID match `config/identity-migration.json`, `manifest.json`, and the installation directory; project only the reviewed minimal owner, maintainer, security, supported-platform, repository, support, and cadence facts. Private persona and organizational-status context stays excluded.
 2. Verify the root MIT `LICENSE`, historical `LICENSE-DECISION.md`, and package metadata remain aligned.
 3. Run `npm run proof:clean-room` for an offline current-working-tree proof and `npm run proof:public-source` for the allowlisted disclosure boundary. Review the exact public projection digest and exclusions. Once a reviewed Git source exists, also run `npm ci`, `npm run proof`, `npm run check:release-candidate`, and `npm audit --omit=dev` in a clean checkout.
+
+The current 0.0.32 local Git source has passed that clean-checkout sequence from a fresh offline clone with zero observed production dependency vulnerabilities. This closes only the reproducible-public-source gate. It does not close exact-candidate lifecycle, real-host assurance, hosted assurance, remote, release, or Community-submission gates, and any subsequent source change invalidates the execution evidence until the sequence is repeated.
 4. Run DOM, accessibility, supported-Obsidian, theme, reload, and 1/10/50-block performance checks; preserve receipts.
 5. Confirm the manifest/package versions match and add the version to `versions.json`.
 6. Confirm release assets contain `main.js`, `manifest.json`, and optional `styles.css`, with no workspace state or source responses.

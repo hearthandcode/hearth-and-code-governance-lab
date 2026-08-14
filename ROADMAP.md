@@ -36,7 +36,8 @@ Exit requires destination semantic-owner and integration-owner review. The Obsid
 
 ### H3 — Public release admission
 
-- Accept the exact post-settings public-source digest, then prepare a clean reviewed Git source, read-only hosted checks, reproducible assets, dependency and secret evidence, final-candidate manual-install receipt, and public documentation.
+- The accepted 0.0.32 projection is materialized as a clean local Git source. A fresh offline clone of the committed tree passes locked dependency installation, the complete proof, and the production dependency audit; any later source change must repeat that proof.
+- Complete read-only hosted checks, final-candidate identity and recovery lifecycle evidence, remaining real-host assurance, and the final-candidate manual-install receipt.
 - Obtain separate approval for remote creation, push, GitHub release, and Obsidian Community directory submission.
 - Publish only `main.js`, `manifest.json`, and `styles.css` as release assets, with an exact version tag and matching manifest.
 - Keep response packets, private canonical sources, workspace state, credentials, and test-vault state out of the public repository and release.
