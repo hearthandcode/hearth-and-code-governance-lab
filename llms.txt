@@ -213,7 +213,7 @@ Operate conservatively when the agent working directory is an Obsidian vault rat
 - Preserve existing frontmatter, prose, fence ordering, IDs, and response templates unless asked to change them.
 - Search only within the named note or an explicitly bounded authoring directory.
 - Do not enumerate response packets; require a locator supplied by the human or plugin receipt.
-- Do not modify `.obsidian`, plugin assets, workspace state, response packets, or plugin `data.json` directly; use the registered four-field settings panel.
+- Do not modify `.obsidian`, plugin assets, workspace state, response packets, or plugin `data.json` directly; use the versioned profile selector and thirteen-preference settings panel.
 - Write source-visible Markdown only when the user explicitly requests creation or editing.
 - Keep generated worksheets in a user-approved directory and use explicit workbook paths.
 - Do not assume the vault is a canonical knowledge system.

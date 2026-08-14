@@ -14,12 +14,15 @@ const findings = [];
 check(/^\d+\.\d+\.\d+$/.test(manifest.version), "manifest version must use exact x.y.z semantic versioning");
 check(manifest.version === packageJson.version, "manifest and package versions must match");
 check(versions[manifest.version] === manifest.minAppVersion, "versions.json must bind the current plugin version");
-check(typeof manifest.id === "string" && /^[a-z0-9][a-z0-9-]*$/.test(manifest.id) && !manifest.id.includes("obsidian"), "plugin ID must be normalized and must not contain obsidian");
+check(typeof manifest.id === "string" && /^[a-z]+(?:-[a-z]+)*$/.test(manifest.id) && !manifest.id.includes("obsidian") && !manifest.id.endsWith("plugin"), "plugin ID must use lowercase letters and hyphens, must not contain obsidian, and must not end with plugin");
+check(typeof manifest.name === "string" && /^[A-Za-z0-9 +()-]+$/.test(manifest.name) && !/obsidian|plugin/i.test(manifest.name), "plugin name must use allowed Basic Latin characters and must not contain Obsidian or Plugin");
+check(typeof manifest.description === "string" && manifest.description.length <= 250 && manifest.description.endsWith(".") && /^[\x20-\x7E]+$/.test(manifest.description) && !/^this is a plugin\b/i.test(manifest.description), "plugin description must be concise ASCII text, end with a period, and not begin with This is a plugin");
 check(manifest.id === "hearth-and-code-governance-lab" && manifest.name === "Hearth and Code Governance Lab", "accepted public identity must remain aligned");
 check(manifest.author === "Scott Rallya" && manifest.authorUrl === "https://hearthandcode.dev" && manifest.isDesktopOnly === true, "accepted public stewardship and desktop-only metadata must remain aligned");
 check(developmentInstall.directoryId === "hcc-widget-lab" && developmentInstall.manifestOverrides?.id === "hcc-widget-lab", "disposable-vault compatibility identity must remain hcc-widget-lab");
 check(buildConfiguration.includes("minify: production"), "production build configuration must enable minification");
 check(packageJson.license === "MIT" && exists("LICENSE"), "MIT package metadata and root license are required");
+check(!exists("main.js"), "compiled main.js must remain a release attachment and must not be committed at repository root");
 for (const path of ["README.md", "ROADMAP.md", "manifest.json", "versions.json", "package-lock.json", "PRIVACY.md", "SECURITY.md", "SUPPORT.md", "CONTRIBUTING.md", "config/release-admission.json", "config/identity-migration.json", "config/provider-neutral-semantic-interoperability.json", "config/development-install.json", "config/public-stewardship.json", "scripts/check-identity-migration.mjs", "scripts/check-provider-neutral-semantic-interoperability.ts", "scripts/verify-install-layout.mjs", "docs/reference/native-dashboard.md", "docs/reference/schema-workflow-studio.md", "docs/reference/provider-neutral-exchange.md", "docs/reference/semantic-interoperability.md", "docs/guides/first-use-and-manual-install.md", "docs/guides/ai-assisted-governed-workflow.md", "docs/guides/project-setup-and-integration.md", "docs/guides/response-packets.md", "docs/guides/troubleshooting-and-recovery.md", "docs/maintainers/compatibility-matrix.md", ".github/ISSUE_TEMPLATE/bug-report.yml", ".github/ISSUE_TEMPLATE/feature-proposal.yml", ".github/pull_request_template.md"]) check(exists(path), `required repository file is missing: ${path}`);
 
 const admissionGates = Array.isArray(admission.gates) ? admission.gates : [];
@@ -78,7 +81,7 @@ const receipt = {
   record_type: "hcc-open-source-release-candidate-check",
   checked_at: new Date().toISOString(),
   version: manifest.version,
-  official_contract_checked: "2026-08-12",
+  official_contract_checked: "2026-08-14",
   local_candidate_consistent: findings.length === 0,
   public_release_ready: publicReleaseReady,
   release_assets: releaseAssets,

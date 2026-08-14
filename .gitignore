@@ -1,4 +1,5 @@
 node_modules/
+/main.js
 scratch-vault/.obsidian/plugins/
 scratch-vault/.obsidian/app.json
 scratch-vault/.obsidian/appearance.json

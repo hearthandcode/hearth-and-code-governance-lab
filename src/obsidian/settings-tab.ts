@@ -20,9 +20,6 @@ export class HccPluginSettingTab extends PluginSettingTab {
   display(): void {
     const container = this.containerEl;
     container.replaceChildren();
-    const title = document.createElement("h2");
-    title.textContent = "Hearth and Code Governance Lab";
-    container.append(title);
     const intro = document.createElement("p");
     intro.textContent = "Presentation preferences are plugin-owned and local to this vault. Changes apply immediately to open rendered HCC surfaces; no plugin reload is required. They change projection only; governance boundaries below remain read-only.";
     container.append(intro);

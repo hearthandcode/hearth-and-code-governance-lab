@@ -11,7 +11,9 @@ describe("official Obsidian guideline hardening", () => {
     const main = read("src/main.ts");
     const releaseCheck = read("scripts/validate-release-candidate.mjs");
     expect(build).toContain("minify: production");
-    expect(releaseCheck).toContain('official_contract_checked: "2026-08-12"');
+    expect(releaseCheck).toContain('official_contract_checked: "2026-08-14"');
+    expect(releaseCheck).toContain('!manifest.id.endsWith("plugin")');
+    expect(releaseCheck).toContain('!exists("main.js")');
     expect(main).not.toContain("Focus next HCC widget");
     expect(main).not.toContain("Focus previous HCC widget");
     expect(main).not.toContain("Return from HCC widget to source");
@@ -35,6 +37,17 @@ describe("official Obsidian guideline hardening", () => {
     expect(expansion).toContain("cell.dataset.opacityLevel");
     for (let index = 0; index < 8; index += 1) expect(css).toContain(`[data-series-index="${index}"]`);
     for (let level = 1; level <= 8; level += 1) expect(css).toContain(`[data-opacity-level="${level}"]`);
+  });
+
+  it("uses Obsidian settings headings and keeps the persisted-field disclosure current", () => {
+    const settingsTab = read("src/obsidian/settings-tab.ts");
+    const privacy = read("PRIVACY.md");
+    const llms = read("llms.txt");
+    expect(settingsTab).not.toMatch(/createElement\(["']h[12]["']\)/);
+    expect(settingsTab).not.toMatch(/createEl\(["']h[12]["']/);
+    expect(settingsTab.match(/\.setHeading\(\)/g)).toHaveLength(4);
+    expect(privacy).toContain("one presentation-profile selector and exactly thirteen presentation preferences");
+    expect(llms).toContain("versioned profile selector and thirteen-preference settings panel");
   });
 
   it("binds session presentation and dashboard creation to owning documents", () => {
