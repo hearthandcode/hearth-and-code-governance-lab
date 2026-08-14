@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hearth & Code Governance Obsidian"
+  short_description: "Author governed Hub artifacts for Obsidian"
+  default_prompt: "Use $hearthandcode-governance-obsidian to route and draft a governed worksheet, workbook, or projection for review in Obsidian."

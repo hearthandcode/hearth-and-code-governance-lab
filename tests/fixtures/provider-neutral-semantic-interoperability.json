@@ -1,0 +1,14 @@
+{
+  "contractVersion": "0.1-candidate.1",
+  "publicSafe": true,
+  "fixtures": [
+    { "id": "interaction", "sourceSurface": "hcc-interaction", "source": { "version": "0.3-candidate.1", "id": "synthetic-purpose", "kind": "short_text", "prompt": "State the synthetic purpose.", "config": { "max_length": 128 }, "visibility": "private" }, "expected": { "recordType": "interaction-definition", "authorityState": "definition" }, "effect": "none" },
+    { "id": "response", "sourceSurface": "response", "source": { "interaction_id": "synthetic-purpose", "value": "Fixture only", "state": "answered" }, "expected": { "recordType": "interaction-response", "authorityState": "candidate" }, "effect": "none" },
+    { "id": "worksheet", "sourceSurface": "hcc-form", "source": { "version": "0.1-candidate.1", "id": "synthetic-worksheet", "sections": [{ "id": "purpose", "interactions": ["synthetic-purpose"] }] }, "expected": { "recordType": "worksheet-definition", "authorityState": "definition" }, "effect": "none" },
+    { "id": "workbook", "sourceSurface": "hcc-workbook", "source": { "version": "0.1-candidate.1", "id": "synthetic-workbook", "worksheets": [{ "id": "synthetic-worksheet", "ref": "Worksheets/Synthetic" }] }, "expected": { "recordType": "workbook-definition", "authorityState": "definition" }, "effect": "none" },
+    { "id": "view", "sourceSurface": "hcc-view", "source": { "version": "0.2-candidate.1", "id": "synthetic-view", "kind": "table" }, "expected": { "recordType": "view-definition", "authorityState": "projection" }, "effect": "none" },
+    { "id": "packet", "sourceSurface": "hcc-worksheet-response-packet", "source": { "contract_version": "0.1-candidate.1", "session_id": "synthetic-session", "immutable": true }, "expected": { "recordType": "response-packet", "authorityState": "candidate" }, "effect": "none" },
+    { "id": "governance", "sourceSurface": "governance-dashboard", "source": { "source_path": "Notes/Synthetic.md", "verified": false }, "expected": { "recordType": "governance-projection", "authorityState": "projection" }, "effect": "none" },
+    { "id": "exchange", "sourceSurface": "hcc-exchange", "source": { "version": "0.1-candidate.1", "id": "synthetic-exchange" }, "expected": { "recordType": "exchange-packet", "authorityState": "candidate" }, "effect": "none" }
+  ]
+}

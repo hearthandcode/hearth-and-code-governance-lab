@@ -1,0 +1,1872 @@
+.hcc-widget {
+  border: 1px solid var(--hcc-border);
+  border-inline-start: 4px solid var(--hcc-accent);
+  border-radius: var(--hcc-radius);
+  background: var(--hcc-surface);
+  color: var(--hcc-text);
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+/* Public customization contract. These variables intentionally fall back to
+   Obsidian theme tokens so the plugin remains usable without Hearth styling. */
+.hcc-widget,
+.hcc-view,
+.hcc-workbook,
+.hcc-extension {
+  --hcc-surface: var(--background-secondary);
+  --hcc-surface-raised: var(--background-primary);
+  --hcc-surface-inset: var(--background-modifier-form-field, var(--background-primary));
+  --hcc-surface-message: var(--background-modifier-message, var(--background-primary));
+  --hcc-border: var(--background-modifier-border);
+  --hcc-border-strong: var(--background-modifier-border-hover, var(--background-modifier-border));
+  --hcc-accent: var(--interactive-accent);
+  --hcc-accent-bright: var(--interactive-accent-hover, var(--interactive-accent));
+  --hcc-accent-contrast: var(--text-on-accent, #fff);
+  --hcc-link: var(--text-accent, var(--interactive-accent));
+  --hcc-text: var(--text-normal);
+  --hcc-text-muted: var(--text-muted);
+  --hcc-focus: var(--interactive-accent);
+  --hcc-danger: var(--text-error, var(--color-red));
+  --hcc-warning: var(--text-warning, var(--color-yellow));
+  --hcc-success: var(--text-success, var(--color-green));
+  --hcc-signal-cyan: var(--color-cyan, var(--interactive-accent));
+  --hcc-signal-violet: var(--color-purple, var(--interactive-accent));
+  --hcc-signal-green: var(--color-green, var(--interactive-success));
+  --hcc-signal-ember: var(--color-orange, var(--interactive-accent));
+  --hcc-signal-amber: var(--color-yellow, var(--interactive-accent));
+  --hcc-signal-rose: var(--color-red, var(--text-error));
+  --hcc-radius: var(--radius-m, 8px);
+  --hcc-space: 1rem;
+  --hcc-font-display: var(--font-text-theme, Georgia, serif);
+  --hcc-font-body: var(--font-interface-theme, system-ui, sans-serif);
+  --hcc-font-mono: var(--font-monospace-theme, ui-monospace, monospace);
+  --hcc-shadow: none;
+  --hcc-grid-size: 32px;
+}
+
+.hcc-plugin-density-compact :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) {
+  --hcc-space: 0.55rem;
+}
+
+.hcc-plugin-density-compact :is(.hcc-widget__controls, .hcc-widget__actions, .hcc-widget__views, .hcc-workbook__toolbar) {
+  gap: 0.45rem;
+}
+
+.hcc-settings__boundary {
+  border-inline-start: 3px solid var(--interactive-accent);
+  color: var(--text-muted);
+  padding-inline-start: 0.75rem;
+}
+
+.hcc-settings__gallery-note {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-inline-start: 3px solid var(--interactive-accent);
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+  padding: 0.75rem;
+}
+
+body.hcc-plugin-density-compact :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) {
+  margin-block: 0.55rem;
+}
+
+body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section, details) {
+  padding-block: 0.5rem;
+}
+
+.hcc-extension {
+  background: var(--hcc-surface);
+  border: 1px solid var(--hcc-border);
+  border-inline-start: 4px solid var(--hcc-accent);
+  border-radius: var(--hcc-radius);
+  color: var(--hcc-text);
+  margin: 1rem 0;
+  padding: var(--hcc-space);
+}
+
+.hcc-extension__output {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 2px);
+  color: var(--hcc-accent);
+  display: block;
+  font-size: clamp(1.75rem, 6vw, 3rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  margin-block: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.hcc-extension table {
+  border-collapse: collapse;
+  margin-block-start: 0.75rem;
+  width: 100%;
+}
+
+.hcc-extension th,
+.hcc-extension td {
+  border-block-end: 1px solid var(--hcc-border);
+  padding: 0.5rem;
+  text-align: start;
+}
+
+.hcc-extension svg {
+  color: var(--hcc-text-muted);
+  display: block;
+  height: auto;
+  margin-inline: auto;
+  max-width: 46rem;
+  overflow: visible;
+  width: 100%;
+}
+
+.hcc-radar__grid,
+.hcc-radar__axis {
+  fill: none;
+  stroke: var(--hcc-border);
+  stroke-width: 1.5;
+}
+
+.hcc-radar__leader {
+  stroke: var(--hcc-border-strong);
+  stroke-dasharray: 3 3;
+  stroke-width: 1.5;
+}
+
+.hcc-radar__label-box {
+  fill: var(--hcc-surface-raised);
+  fill-opacity: 0.96;
+  stroke: var(--hcc-border);
+  stroke-width: 1.5;
+}
+
+.hcc-radar__label {
+  fill: var(--hcc-text);
+  font-size: 14px;
+  font-weight: 650;
+  paint-order: stroke fill;
+  stroke: var(--hcc-surface-raised);
+  stroke-width: 2px;
+}
+
+.hcc-radar__series {
+  fill: color-mix(in srgb, var(--hcc-series-color) 18%, transparent);
+  stroke: var(--hcc-series-color);
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="0"] { --hcc-series-color: var(--hcc-signal-ember); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="1"] { --hcc-series-color: var(--hcc-signal-cyan); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="2"] { --hcc-series-color: var(--hcc-signal-violet); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="3"] { --hcc-series-color: var(--hcc-signal-green); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="4"] { --hcc-series-color: var(--hcc-signal-amber); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="5"] { --hcc-series-color: var(--hcc-signal-rose); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="6"] { --hcc-series-color: var(--hcc-text-muted); }
+:is(.hcc-radar__series, .hcc-radar__legend li)[data-series-index="7"] { --hcc-series-color: var(--hcc-accent); }
+
+.hcc-view__mark[data-opacity-level="1"] { opacity: 0.43; }
+.hcc-view__mark[data-opacity-level="2"] { opacity: 0.51; }
+.hcc-view__mark[data-opacity-level="3"] { opacity: 0.59; }
+.hcc-view__mark[data-opacity-level="4"] { opacity: 0.68; }
+.hcc-view__mark[data-opacity-level="5"] { opacity: 0.76; }
+.hcc-view__mark[data-opacity-level="6"] { opacity: 0.84; }
+.hcc-view__mark[data-opacity-level="7"] { opacity: 0.92; }
+.hcc-view__mark[data-opacity-level="8"] { opacity: 1; }
+
+.hcc-radar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+}
+
+.hcc-radar__legend li::before {
+  background: var(--hcc-series-color);
+  border-radius: 50%;
+  content: "";
+  display: inline-block;
+  height: 0.75rem;
+  margin-inline-end: 0.4rem;
+  width: 0.75rem;
+}
+
+/* Ember Circuit is a presentation-only projection. Private design-source snapshots:
+   aesthetic guide b941ab06ac4fe88c6a763a1ec88a44aae2b621602cc80f80b895183fdd092cf8
+   public tokens 84bc1c64bac022a98f8f2583d554700e8a8f1f063e4858ae3e0d81862e9adc39
+   Obsidian theme 84ec22c2a16a0a818058df0cfd7212e04eb49dbd6504adf0fc2f219ec18ee0e7
+   candidate signal vocabulary 2eb7d0eff56f7fc263a14ae290d10fd526c3ba134eee33e0de7bf2f166771644
+   Prefer the per-note
+   hcc-theme-ember-circuit cssclass or the session command; the older
+   hcc-ember-circuit class remains a compatibility alias. */
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) {
+  --hcc-surface: #1c1714;
+  --hcc-surface-raised: #2a2320;
+  --hcc-surface-inset: #211a17;
+  --hcc-surface-message: #332822;
+  --hcc-border: #4a3528;
+  --hcc-border-strong-source: #5c4332;
+  --hcc-border-strong: #8f6b52;
+  --hcc-accent: #e8923c;
+  --hcc-accent-bright: #f4b860;
+  --hcc-accent-contrast: #1c1714;
+  --hcc-link-source: #5e7e78;
+  --hcc-link: #6f968f;
+  --hcc-text: #f2e7d5;
+  --hcc-text-muted: #b8a892;
+  --hcc-focus: #3fe0d0;
+  --hcc-danger: #d7785b;
+  --hcc-warning: #f4b860;
+  --hcc-success: #8fa395;
+  --hcc-signal-cyan: #3fe0d0;
+  --hcc-signal-violet: #a98ee8;
+  --hcc-signal-green: #8fa395;
+  --hcc-signal-ember: #c25a2a;
+  --hcc-signal-amber: #f4b860;
+  --hcc-signal-rose: #d7785b;
+  --hcc-radius: 8px;
+  --hcc-font-display: "Fraunces", "Iowan Old Style", Charter, Georgia, serif;
+  --hcc-font-body: "Inter", system-ui, sans-serif;
+  --hcc-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --hcc-shadow: 0 10px 30px rgba(10, 7, 6, 0.22);
+  isolation: isolate;
+  position: relative;
+  background-color: var(--hcc-surface);
+  background-image:
+    linear-gradient(90deg, color-mix(in srgb, var(--hcc-signal-cyan) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--hcc-signal-ember) 6%, transparent) 1px, transparent 1px);
+  background-size: var(--hcc-grid-size) var(--hcc-grid-size);
+  border-color: var(--hcc-border);
+  border-inline-start-color: var(--hcc-accent);
+  box-shadow: var(--hcc-shadow);
+  color: var(--hcc-text);
+  font-family: var(--hcc-font-body);
+}
+
+/* The circuit grid is supporting atmosphere, not a reading surface. An
+   opaque inset projection leaves only a narrow circuit-frame visible. */
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension)::before {
+  background: color-mix(in srgb, var(--hcc-surface) 92%, var(--hcc-surface-raised));
+  border: 1px solid color-mix(in srgb, var(--hcc-border) 82%, transparent);
+  border-radius: calc(var(--hcc-radius) - 2px);
+  content: "";
+  inset: 6px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) > * {
+  position: relative;
+  z-index: 1;
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(h3, h4, h5) {
+  color: var(--hcc-text);
+  font-family: var(--hcc-font-display);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(button, input, select, textarea, output) {
+  background: var(--hcc-surface-inset);
+  border-color: var(--hcc-border-strong);
+  color: var(--hcc-text);
+  font-family: var(--hcc-font-body);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(input:not([type="radio"]):not([type="checkbox"]), select, textarea) {
+  border-width: 2px;
+  min-height: 2.75rem;
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) ::placeholder {
+  color: color-mix(in srgb, var(--hcc-text-muted) 86%, var(--hcc-text));
+  opacity: 1;
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(input, select, textarea):focus {
+  border-color: var(--hcc-accent);
+  box-shadow: 0 0 0 3px rgba(232, 146, 60, 0.15);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(button, summary):hover {
+  border-color: var(--hcc-accent);
+  color: var(--hcc-text);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(a, summary) {
+  color: var(--hcc-link);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(code, pre) {
+  background: var(--hcc-surface-inset);
+  color: var(--hcc-text);
+  font-family: var(--hcc-font-mono);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) :is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :focus-visible {
+  outline: 3px solid var(--hcc-focus);
+  outline-offset: 2px;
+}
+
+:is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(table) {
+  border-collapse: collapse;
+  color: var(--hcc-text);
+}
+
+:is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(th, td) {
+  border-color: var(--hcc-border);
+}
+
+:is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) thead th {
+  background: var(--hcc-surface-raised);
+}
+
+:is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--hcc-accent);
+}
+
+:is(.hcc-view, .hcc-extension) svg {
+  background: color-mix(in srgb, var(--hcc-surface-raised) 94%, transparent);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 2px);
+}
+
+:is(.hcc-widget, .hcc-view, .hcc-workbook, .hcc-extension) :is(details, .hcc-widget__region, .hcc-workbook__section, .hcc-governance__output) {
+  border-color: var(--hcc-border);
+}
+
+.hcc-widget:focus-within {
+  border-color: var(--hcc-accent);
+}
+
+.hcc-widget--error,
+.hcc-widget[data-hcc-invalid="true"] {
+  border-inline-start-color: var(--hcc-danger);
+}
+
+.hcc-widget__header,
+.hcc-widget__actions,
+.hcc-widget__inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hcc-widget__header,
+.hcc-widget__actions {
+  justify-content: space-between;
+}
+
+.hcc-widget__identity,
+.hcc-widget__visibility,
+.hcc-widget__relationship,
+.hcc-widget__metadata {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.hcc-widget__identity,
+.hcc-widget__visibility {
+  text-transform: uppercase;
+}
+
+.hcc-widget__prompt {
+  font-size: var(--h4-size);
+  margin: 0.35rem 0 0.75rem;
+}
+
+.hcc-widget__help,
+.hcc-widget__phase-notice,
+.hcc-widget__status,
+.hcc-widget__region-note,
+.hcc-widget__held-note,
+.hcc-widget__empty,
+.hcc-widget__performance-observation {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.hcc-widget__phase-notice,
+.hcc-widget__held-note {
+  border-inline-start: 3px solid var(--hcc-accent);
+  padding-inline-start: 0.75rem;
+}
+
+.hcc-widget__region {
+  border-block-start: 1px solid var(--hcc-border);
+  margin-block-start: 1rem;
+  padding-block-start: 1rem;
+}
+
+.hcc-widget__region-title {
+  font-size: var(--h5-size);
+  margin: 0 0 0.65rem;
+}
+
+.hcc-widget__controls,
+.hcc-widget__views,
+.hcc-widget__adjacent-list,
+.hcc-widget__preview-output,
+.hcc-widget__gate-list,
+.hcc-widget__diagnostics {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hcc-widget__controls {
+  margin: 0.5rem 0 1rem;
+}
+
+.hcc-widget__interaction-region {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hcc-widget__fieldset {
+  border: 0;
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.hcc-widget__legend,
+.hcc-widget__label,
+.hcc-widget__preview-label {
+  font-weight: var(--font-semibold);
+}
+
+.hcc-widget__option {
+  align-items: center;
+  border: 2px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  display: flex;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.6rem;
+}
+
+.hcc-widget__option input:is([type="radio"], [type="checkbox"]) {
+  flex: 0 0 auto;
+  height: 1.3rem;
+  min-height: 1.3rem;
+  min-width: 1.3rem;
+  width: 1.3rem;
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option {
+  background: var(--hcc-surface-raised);
+  border-color: var(--hcc-border-strong);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option:has(input:checked) {
+  background: color-mix(in srgb, var(--hcc-surface-raised) 76%, var(--hcc-accent) 24%);
+  border-color: var(--hcc-accent-bright);
+  box-shadow: inset 0 0 0 1px var(--hcc-accent-bright);
+  color: var(--hcc-text);
+}
+
+.hcc-widget__rating-values button[aria-pressed="true"] {
+  border-color: var(--hcc-accent-bright);
+  box-shadow: inset 0 0 0 2px var(--hcc-accent-bright);
+  font-weight: 750;
+}
+
+.hcc-widget__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.hcc-widget__textarea,
+.hcc-widget__input,
+.hcc-widget__select {
+  max-width: 100%;
+  width: 100%;
+}
+
+.hcc-widget__scale-output {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-semibold);
+}
+
+.hcc-widget__ranking,
+.hcc-widget__repeatable-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.hcc-widget__ranking-item {
+  align-items: center;
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.hcc-widget__ranking-item[draggable="true"] {
+  cursor: grab;
+}
+
+.hcc-widget__ranking-item[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.hcc-widget__ranking-item[data-insertion-edge="before"] {
+  border-block-start: 0.25rem solid var(--hcc-accent);
+}
+
+.hcc-widget__ranking-item[data-insertion-edge="after"] {
+  border-block-end: 0.25rem solid var(--hcc-accent);
+}
+
+.hcc-widget__ranking-item[data-insertion-edge]::before {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: var(--hcc-radius);
+  content: "Insert " attr(data-insertion-edge);
+  display: inline-block;
+  font-size: 0.75rem;
+  grid-column: 1 / -1;
+  margin-inline-end: 0.5rem;
+  padding: 0.15rem 0.35rem;
+}
+
+.hcc-widget__ranking-status {
+  color: var(--hcc-text-muted);
+  font-size: 0.85rem;
+  margin-block: 0.4rem;
+}
+
+.hcc-widget__number-stepper {
+  align-items: stretch;
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: 2.75rem minmax(6rem, 1fr) 2.75rem;
+  max-width: 24rem;
+}
+
+.hcc-widget__number-stepper .hcc-widget__input {
+  min-width: 0;
+  text-align: center;
+}
+
+.hcc-widget__stepper-button {
+  font-size: 1.2rem;
+  min-height: 2.75rem;
+  padding-inline: 0.5rem;
+}
+
+.hcc-widget__multi-select {
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  padding: 0.65rem;
+}
+
+.hcc-widget__radio-group--horizontal,
+.hcc-widget__rating-values {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hcc-widget__rating-values .hcc-widget__button[aria-pressed="true"] {
+  background: var(--hcc-accent);
+  color: var(--hcc-accent-contrast);
+}
+
+.hcc-widget__key-values,
+.hcc-widget__key-value-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.hcc-view__track {
+  fill: var(--hcc-surface-raised);
+  stroke: var(--hcc-border);
+}
+
+.hcc-view__mark[data-sign="negative"] {
+  color: var(--hcc-danger);
+}
+
+.hcc-widget__color-input {
+  min-height: 3rem;
+  width: 8rem;
+}
+
+.hcc-widget__tags,
+.hcc-widget__tag-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.hcc-widget__tag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hcc-widget__tag-item {
+  align-items: center;
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  display: flex;
+  gap: 0.6rem;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+}
+
+.hcc-widget__matrix {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.hcc-widget__matrix th,
+.hcc-widget__matrix td {
+  padding: 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.hcc-widget__matrix tbody th {
+  min-width: 13rem;
+  text-align: start;
+}
+
+.hcc-widget__matrix-row-label,
+.hcc-widget__matrix-row-status {
+  display: block;
+}
+
+.hcc-widget__matrix-row-status {
+  color: var(--hcc-text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-block-start: 0.25rem;
+}
+
+.hcc-widget__matrix-choice {
+  align-items: center;
+  border: 2px solid transparent;
+  border-radius: calc(var(--hcc-radius) - 3px);
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  justify-content: center;
+  min-height: 4rem;
+  min-width: 5.25rem;
+  padding: 0.45rem;
+}
+
+.hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"]) {
+  appearance: none;
+  background: var(--hcc-surface);
+  border: 2px solid var(--hcc-text-muted);
+  display: grid;
+  height: 1.4rem;
+  margin: 0;
+  min-height: 1.4rem;
+  min-width: 1.4rem;
+  place-content: center;
+  width: 1.4rem;
+}
+
+.hcc-widget__matrix-choice input[type="radio"] {
+  border-radius: 50%;
+}
+
+.hcc-widget__matrix-choice input[type="checkbox"] {
+  border-radius: 0.25rem;
+}
+
+.hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"])::before {
+  background: var(--hcc-accent-bright);
+  content: "";
+  height: 0.7rem;
+  transform: scale(0);
+  width: 0.7rem;
+}
+
+.hcc-widget__matrix-choice input[type="radio"]::before {
+  border-radius: 50%;
+}
+
+.hcc-widget__matrix-choice input[type="checkbox"]::before {
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 19%, 84% 4%, 39% 69%);
+}
+
+.hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"]):checked {
+  border-color: var(--hcc-accent-bright);
+  box-shadow: 0 0 0 2px var(--hcc-surface), 0 0 0 4px var(--hcc-accent);
+}
+
+.hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"]):checked::before {
+  transform: scale(1);
+}
+
+.hcc-widget__matrix-choice-state {
+  color: var(--hcc-text-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.hcc-widget__matrix td[data-selected="true"] {
+  box-shadow: inset 0 0 0 2px var(--hcc-accent-bright);
+}
+
+.hcc-widget__matrix td[data-selected="true"] .hcc-widget__matrix-choice-state,
+.hcc-widget__matrix td[data-selected="true"] .hcc-widget__matrix-row-status {
+  color: var(--hcc-accent-bright);
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__matrix tbody :is(th, td) {
+  background: color-mix(in srgb, var(--hcc-surface-raised) 88%, var(--hcc-surface));
+}
+
+:is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__matrix tbody tr:nth-child(even) :is(th, td) {
+  background: color-mix(in srgb, var(--hcc-surface-inset) 90%, var(--hcc-surface-raised));
+}
+
+.hcc-widget__repeatable > .hcc-widget__button {
+  margin-block-start: 0.65rem;
+}
+
+.hcc-widget--candidate {
+  border-inline-start-style: dashed;
+}
+
+.hcc-widget__button {
+  min-height: 2.75rem;
+  white-space: normal;
+}
+
+.hcc-widget__button--quiet {
+  background: transparent;
+  box-shadow: none;
+  color: var(--hcc-text-muted);
+}
+
+.hcc-widget__state-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hcc-widget__state-shortcuts .hcc-widget__button {
+  font-size: var(--font-ui-smaller);
+  min-height: 2.25rem;
+}
+
+.hcc-widget__note-disclosure,
+.hcc-widget__companion-details {
+  color: var(--hcc-text-muted);
+}
+
+.hcc-widget__note-disclosure[open],
+.hcc-widget__companion-details[open] {
+  color: var(--hcc-text);
+}
+
+.hcc-widget__note-disclosure .hcc-widget__field {
+  margin-block-start: 0.65rem;
+}
+
+.hcc-widget__review-region[hidden] {
+  display: none;
+}
+
+.hcc-widget__review-region:focus {
+  outline: 3px solid var(--hcc-focus);
+  outline-offset: 2px;
+}
+
+.hcc-widget__gate-group h5 {
+  margin-block-end: 0.35rem;
+}
+
+.hcc-widget__button:focus-visible,
+.hcc-widget input:focus-visible,
+.hcc-widget textarea:focus-visible,
+.hcc-widget select:focus-visible,
+.hcc-widget summary:focus-visible {
+  outline: 3px solid var(--hcc-focus);
+  outline-offset: 2px;
+}
+
+.hcc-widget__source {
+  margin-top: 0.5rem;
+}
+
+.hcc-widget__source-summary {
+  cursor: pointer;
+  min-height: 2rem;
+}
+
+.hcc-widget__source-code,
+.hcc-widget__preview-json {
+  max-height: 24rem;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.hcc-widget__copyable-block {
+  position: relative;
+}
+
+.hcc-widget__copy-block-button {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  z-index: 1;
+}
+
+.hcc-widget__copyable-block .hcc-widget__preview-json {
+  padding-block-start: 3.25rem;
+}
+
+.hcc-widget__copy-status {
+  block-size: 1px;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+
+.hcc-evidence-report__surface {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hcc-evidence-report__summary {
+  background: var(--hcc-surface-inset);
+  border: 1px solid var(--hcc-border-strong);
+  border-radius: var(--hcc-radius-small);
+  margin: 0;
+  padding: 0.75rem;
+}
+
+.hcc-evidence-report__toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hcc-evidence-report__copy {
+  font-size: var(--font-ui-smaller);
+  min-height: 2.25rem;
+  padding: 0.35rem 0.6rem;
+}
+
+.hcc-evidence-report__content {
+  background: var(--hcc-surface-inset);
+  border: 1px solid var(--hcc-border);
+  box-sizing: border-box;
+  margin: 0;
+  max-height: min(60vh, 38rem);
+  overflow: auto;
+  padding: 0.85rem;
+  -webkit-user-select: text;
+  user-select: text;
+  white-space: pre;
+}
+
+.hcc-evidence-report__content code {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.hcc-widget__diagnostic-code,
+.hcc-widget__gate-list {
+  color: var(--hcc-danger);
+  font-weight: var(--font-semibold);
+}
+
+.hcc-widget__description-list {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.4fr) minmax(0, 1fr);
+  margin: 0;
+}
+
+.hcc-widget__description-list dt,
+.hcc-widget__description-list dd {
+  border-block-end: 1px solid var(--hcc-border);
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: 0.4rem;
+}
+
+.hcc-widget__description-list dt {
+  font-weight: var(--font-semibold);
+}
+
+.hcc-widget__adjacent-list {
+  list-style: none;
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+.hcc-widget__adjacent-item {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem;
+}
+
+.hcc-widget__cap-notice,
+.hcc-widget__preview-label {
+  background: var(--hcc-surface-message);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  padding: 0.6rem;
+}
+
+.hcc-widget__intake-region {
+  box-shadow: none;
+}
+
+.hcc-view {
+  border: 1px solid var(--hcc-border);
+  border-inline-start: 4px solid var(--hcc-accent);
+  border-radius: var(--hcc-radius);
+  background: var(--hcc-surface);
+  color: var(--hcc-text);
+  margin: 1rem 0;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.hcc-view > h4 {
+  margin-block: 0 0.35rem;
+}
+
+.hcc-view__status,
+.hcc-view > small {
+  color: var(--hcc-text-muted);
+}
+
+.hcc-view svg {
+  color: var(--hcc-accent);
+  display: block;
+  height: auto;
+  margin-block: 1rem;
+  max-width: 100%;
+  overflow: visible;
+  width: 100%;
+}
+
+.hcc-view svg text {
+  fill: var(--hcc-text);
+  font-size: 12px;
+}
+
+.hcc-view__axis {
+  opacity: 0.55;
+}
+
+.hcc-view__metric {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-block: 1rem;
+}
+
+.hcc-view__metric strong {
+  font-size: 2rem;
+}
+
+.hcc-view table {
+  width: 100%;
+}
+
+.hcc-view-live-preview,
+.hcc-widget-live-preview {
+  padding-block: 0.25rem;
+}
+
+.hcc-workbook {
+  border: 1px solid var(--hcc-border);
+  border-inline-start: 4px solid var(--hcc-accent);
+  border-radius: var(--hcc-radius);
+  background: var(--hcc-surface);
+  color: var(--hcc-text);
+  margin-block: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.hcc-workbook__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.hcc-workbook__manifest-table {
+  border-collapse: collapse;
+  min-width: 42rem;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.hcc-workbook__manifest-table caption {
+  font-weight: var(--font-semibold);
+  padding-block: 0.75rem;
+  text-align: start;
+}
+
+.hcc-workbook__manifest-table th,
+.hcc-workbook__manifest-table td {
+  border-block-end: 1px solid var(--hcc-border);
+  overflow-wrap: anywhere;
+  padding: 0.65rem;
+  text-align: start;
+  vertical-align: middle;
+}
+
+.hcc-workbook__manifest-table thead th {
+  background: var(--hcc-surface-raised);
+}
+
+.hcc-workbook__action-cell {
+  text-align: end !important;
+}
+
+.hcc-workbook__action {
+  min-width: 10rem;
+  width: 10rem;
+}
+
+.hcc-workbook__title {
+  margin-block: 0.35rem;
+}
+
+.hcc-workbook__progress,
+.hcc-workbook__toolbar,
+.hcc-governance__toolbar,
+.hcc-dashboard__toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.hcc-workbook__packet-panel {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  margin-block: 0.8rem;
+  padding: 0.7rem;
+}
+
+.hcc-workbook__packet-panel > summary {
+  cursor: pointer;
+  font-weight: var(--font-semibold);
+}
+
+.hcc-workbook__packet-body,
+.hcc-workbook__packet-field,
+.hcc-workbook__packet-status {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.hcc-workbook__packet-body {
+  margin-block-start: 0.7rem;
+}
+
+.hcc-workbook__release-stages {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hcc-workbook__release-stage {
+  background: var(--hcc-surface);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 5px);
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  padding: 0.45rem 0.55rem;
+}
+
+.hcc-workbook__release-stage[data-hcc-complete="true"] {
+  background: color-mix(in srgb, var(--hcc-accent) 14%, var(--hcc-surface));
+  border-color: var(--hcc-accent);
+  color: var(--hcc-text);
+}
+
+.hcc-workbook__release-stage[data-hcc-complete="true"]::before {
+  content: "✓ ";
+  color: var(--hcc-accent);
+  font-weight: var(--font-bold);
+}
+
+.hcc-workbook__release-status {
+  color: var(--hcc-text-muted);
+  margin: 0;
+}
+
+.hcc-workbook__quick-packet-status {
+  border-inline-start: 3px solid var(--hcc-accent);
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  margin: 0.55rem 0 0;
+  padding: 0.35rem 0.65rem;
+}
+
+.hcc-workbook__release-actions {
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.hcc-workbook__packet-field > label {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+}
+
+.hcc-workbook__packet-edit-note {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  margin: 0;
+}
+
+.hcc-workbook__packet-field-control {
+  align-items: stretch;
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.hcc-workbook__packet-field :is(input, textarea) {
+  box-sizing: border-box;
+  font-family: var(--font-monospace);
+  min-width: 0;
+  -webkit-user-select: text;
+  user-select: text;
+  width: 100%;
+}
+
+.hcc-workbook__packet-field-copy {
+  align-self: start;
+  font-size: var(--font-ui-smaller);
+  min-height: 2.25rem;
+  min-width: 3.75rem;
+  padding: 0.35rem 0.55rem;
+}
+
+.hcc-workbook__packet-confirm {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.hcc-workbook__packet-confirm input[type="checkbox"] {
+  flex: 0 0 auto;
+  min-height: 1.25rem;
+  min-width: 1.25rem;
+}
+
+.hcc-workbook__packet-confirm-status {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  margin: 0;
+  min-height: 1.25rem;
+}
+
+.hcc-widget-live-preview :is(input, textarea, pre, code),
+.hcc-workbook__packet-status :is(pre, code) {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.hcc-workbook__packet-actions {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.hcc-workbook__packet-actions button {
+  min-height: 2.75rem;
+  white-space: normal;
+}
+
+.hcc-workbook__packet-status:not(:empty) {
+  border-inline-start: 3px solid var(--hcc-accent);
+  padding: 0.7rem;
+}
+
+.hcc-workbook__progress {
+  background: var(--hcc-surface-raised);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  justify-content: space-between;
+  margin-block: 0.75rem;
+  padding: 0.75rem;
+}
+
+.hcc-workbook__focus-stage {
+  align-items: center;
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border-strong);
+  border-inline-start: 4px solid var(--hcc-accent);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-block: 0 0.75rem;
+  max-inline-size: 100%;
+  padding: 0.7rem;
+  position: sticky;
+  top: 0.5rem;
+  z-index: 4;
+  box-shadow: 0 0.35rem 1rem color-mix(in srgb, var(--hcc-surface) 78%, transparent);
+}
+
+.hcc-workbook__focus-stage[hidden] {
+  display: none;
+}
+
+.hcc-workbook__focus-status {
+  font-weight: var(--font-semibold);
+  margin: 0;
+}
+
+.hcc-workbook__focus-stage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+[data-hcc-question-visibility="hidden"] {
+  display: none !important;
+}
+
+[data-hcc-question-visibility="active"] {
+  animation: hcc-question-focus-in 140ms ease-out;
+}
+
+@keyframes hcc-question-focus-in {
+  from { opacity: 0.72; transform: translateY(0.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hcc-workbook__progress-detail {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-progress-summary="hidden"] .hcc-workbook__progress {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-progress-summary="count"] :is(.hcc-workbook__progress-compact, .hcc-workbook__progress-detail),
+.hcc-workbook--worksheet[data-hcc-progress-summary="compact"] .hcc-workbook__progress-detail {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-progress-summary="detailed"] .hcc-workbook__progress-detail {
+  display: inline;
+}
+
+.hcc-workbook__toolbar,
+.hcc-governance__toolbar,
+.hcc-dashboard__toolbar {
+  border-block: 1px solid var(--hcc-border);
+  padding-block: 0.75rem;
+}
+
+.hcc-workbook__secondary-actions,
+.hcc-workbook__navigator {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  margin-block: 0.75rem;
+  padding: 0.7rem;
+}
+
+.hcc-workbook__secondary-actions > summary,
+.hcc-workbook__navigator > summary {
+  cursor: pointer;
+  font-weight: var(--font-semibold);
+}
+
+.hcc-workbook__secondary-action-group {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-block-start: 0.65rem;
+}
+
+.hcc-workbook--worksheet[data-hcc-secondary-actions="inline"] .hcc-workbook__secondary-actions {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.hcc-workbook--worksheet[data-hcc-secondary-actions="inline"] .hcc-workbook__secondary-actions > summary {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-primary-actions="compact"] .hcc-workbook__primary-actions button[data-short-label] {
+  font-size: 0;
+}
+
+.hcc-workbook--worksheet[data-hcc-primary-actions="compact"] .hcc-workbook__primary-actions button[data-short-label]::after {
+  content: attr(data-short-label);
+  font-size: var(--font-ui-small);
+}
+
+.hcc-workbook--worksheet[data-hcc-primary-actions="sticky"] .hcc-workbook__primary-actions {
+  background: var(--hcc-surface);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.hcc-workbook--worksheet[data-hcc-worksheet-navigator="hidden"] .hcc-workbook__navigator {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-worksheet-navigator="compact"] .hcc-workbook__navigator {
+  padding: 0.5rem;
+}
+
+.hcc-workbook--worksheet[data-hcc-worksheet-navigator="compact"] .hcc-workbook__sections {
+  gap: 0.4rem;
+}
+
+.hcc-workbook--worksheet[data-hcc-question-list-scope="none"] .hcc-workbook__question-list,
+.hcc-workbook--worksheet[data-hcc-question-list-scope="current-section"] .hcc-workbook__section[data-hcc-current-section="false"],
+.hcc-workbook--worksheet[data-hcc-question-list-scope="incomplete"] .hcc-workbook__question-item[data-hcc-complete="true"] {
+  display: none;
+}
+
+.hcc-workbook__sections,
+.hcc-workbook__question-list,
+.hcc-workbook__manifest-list,
+.hcc-governance__output {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.hcc-workbook__section,
+.hcc-workbook__manifest-item {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  padding: 0.75rem;
+}
+
+.hcc-workbook__question-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hcc-workbook__question-item,
+.hcc-workbook__manifest-item {
+  align-items: center;
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.hcc-workbook__focus-icon,
+.hcc-workbook__focus-compact-label {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-focus-control="hidden"] .hcc-workbook__focus-control {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-focus-control="icon"] .hcc-workbook__focus-control {
+  min-width: 2.75rem;
+  position: relative;
+}
+
+.hcc-workbook--worksheet[data-hcc-focus-control="icon"] .hcc-workbook__focus-icon,
+.hcc-workbook--worksheet[data-hcc-focus-control="compact-button"] .hcc-workbook__focus-compact-label {
+  display: inline;
+}
+
+.hcc-workbook--worksheet[data-hcc-focus-control="icon"] :is(.hcc-workbook__focus-compact-label, .hcc-workbook__focus-full-label),
+.hcc-workbook--worksheet[data-hcc-focus-control="compact-button"] :is(.hcc-workbook__focus-icon, .hcc-workbook__focus-full-label),
+.hcc-workbook--worksheet[data-hcc-focus-control="full-button"] :is(.hcc-workbook__focus-icon, .hcc-workbook__focus-compact-label) {
+  display: none;
+}
+
+.hcc-workbook--worksheet[data-hcc-focus-control="icon"] .hcc-workbook__focus-control::after {
+  background: var(--hcc-surface);
+  border: 1px solid var(--hcc-border-strong);
+  border-radius: 4px;
+  color: var(--hcc-text);
+  content: attr(data-tooltip);
+  font-size: var(--font-ui-smaller);
+  inset-block-end: calc(100% + 0.35rem);
+  inset-inline-end: 0;
+  max-width: 15rem;
+  opacity: 0;
+  padding: 0.35rem 0.5rem;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 100ms ease;
+  visibility: hidden;
+  white-space: nowrap;
+  z-index: 4;
+}
+
+.hcc-workbook--worksheet[data-hcc-focus-control="icon"] .hcc-workbook__focus-control:is(:hover, :focus-visible)::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hcc-workbook--worksheet[data-hcc-completed-treatment="dimmed"] .hcc-workbook__question-item[data-hcc-complete="true"] {
+  opacity: 0.68;
+}
+
+.hcc-workbook--worksheet[data-hcc-completed-treatment="collapsed"] .hcc-workbook__question-item[data-hcc-complete="true"] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-block: 0.2rem;
+}
+
+.hcc-workbook--worksheet[data-hcc-completed-treatment="collapsed"] .hcc-workbook__question-item[data-hcc-complete="true"] .hcc-workbook__state {
+  display: none;
+}
+
+.hcc-workbook__state {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.hcc-workbook__proposal[hidden] {
+  display: none;
+}
+
+.hcc-workbook__proposal:focus,
+.hcc-governance__output:focus-within {
+  outline: 3px solid var(--hcc-focus);
+  outline-offset: 2px;
+}
+
+.hcc-governance__output {
+  margin-block-start: 0.75rem;
+}
+
+.hcc-dashboard__toolbar {
+  margin-block: 0.75rem;
+}
+
+.hcc-dashboard__toolbar label {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hcc-dashboard__toolbar label > span {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+}
+
+.hcc-dashboard__status,
+.hcc-dashboard__empty {
+  color: var(--hcc-text-muted);
+}
+
+.hcc-dashboard__projection-toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  margin-block: 0.65rem;
+}
+
+.hcc-dashboard__projection-toolbar button {
+  font-size: var(--font-ui-smaller);
+  min-height: 2.25rem;
+  padding: 0.35rem 0.6rem;
+}
+
+.hcc-dashboard__source-value,
+.hcc-dashboard__sources li,
+.hcc-dashboard__proposal-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hcc-dashboard__source-value button,
+.hcc-dashboard__sources button,
+.hcc-dashboard__table td:last-child button {
+  font-size: var(--font-ui-smaller);
+  min-height: 2rem;
+  padding: 0.25rem 0.55rem;
+}
+
+.hcc-dashboard__provenance {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: var(--hcc-radius);
+  margin: 0.85rem 0;
+  padding: 0.85rem;
+}
+
+.hcc-dashboard__provenance figcaption {
+  font-weight: var(--font-semibold);
+  margin-block-end: 0.65rem;
+}
+
+.hcc-dashboard__trail {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hcc-dashboard__trail li {
+  background: var(--hcc-surface);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  min-width: 0;
+  padding: 0.65rem;
+  position: relative;
+}
+
+.hcc-dashboard__trail li:not(:last-child)::after {
+  color: var(--hcc-accent);
+  content: "→";
+  font-weight: var(--font-bold);
+  inset-inline-end: -0.75rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.hcc-dashboard__trail strong,
+.hcc-dashboard__trail span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.hcc-dashboard__trail span {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+  margin-block-start: 0.25rem;
+}
+
+.hcc-dashboard__sources,
+.hcc-dashboard__governance-actions {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  margin-block-start: 0.75rem;
+  padding: 0.7rem;
+}
+
+.hcc-dashboard__sources ul {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+}
+
+.hcc-dashboard__sources li {
+  justify-content: space-between;
+}
+
+.hcc-dashboard__proposal-output pre,
+.hcc-dashboard__proposal-output code {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+@media (max-width: 760px) {
+  .hcc-dashboard__trail { grid-template-columns: 1fr; }
+  .hcc-dashboard__trail li:not(:last-child)::after { content: "↓"; inset-block-end: -0.8rem; inset-inline-end: 50%; top: auto; transform: translateX(50%); }
+}
+
+.hcc-dashboard__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.hcc-dashboard__table {
+  min-width: 38rem;
+  width: 100%;
+}
+
+.hcc-dashboard__table caption {
+  font-weight: var(--font-semibold);
+  padding-block: 0.75rem;
+  text-align: start;
+}
+
+.hcc-dashboard__table th,
+.hcc-dashboard__table td {
+  border-block-end: 1px solid var(--hcc-border);
+  overflow-wrap: anywhere;
+  padding: 0.65rem;
+  text-align: start;
+  vertical-align: top;
+}
+
+.hcc-dashboard__projection details {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  margin-block-start: 0.75rem;
+  padding: 0.7rem;
+}
+
+.hcc-studio__toolbar {
+  align-items: center;
+  border-block: 1px solid var(--hcc-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-block: 0.75rem;
+  padding-block: 0.75rem;
+}
+
+.hcc-studio__status {
+  color: var(--hcc-text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.hcc-studio__diagnostic-source,
+.hcc-studio__diagnostic-source code {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.hcc-studio__section {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  margin-block: 0.75rem;
+  padding: 0.7rem;
+}
+
+.hcc-studio__section > summary {
+  cursor: pointer;
+  font-weight: var(--font-semibold);
+}
+
+.hcc-studio__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.hcc-studio__table {
+  min-width: 38rem;
+  width: 100%;
+}
+
+.hcc-studio__table caption {
+  font-weight: var(--font-semibold);
+  padding-block: 0.75rem;
+  text-align: start;
+}
+
+.hcc-studio__table th,
+.hcc-studio__table td {
+  border-block-end: 1px solid var(--hcc-border);
+  overflow-wrap: anywhere;
+  padding: 0.65rem;
+  text-align: start;
+  vertical-align: top;
+}
+
+.hcc-studio__scale-list ol {
+  columns: 2 18rem;
+}
+
+.hcc-exchange__section {
+  background: var(--hcc-surface-raised);
+  border: 1px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  margin-block: 0.85rem;
+  padding: 0.8rem;
+}
+
+.hcc-exchange__section > h4 {
+  margin-block-start: 0;
+}
+
+.hcc-exchange__import-label {
+  display: grid;
+  font-weight: var(--font-semibold);
+  gap: 0.45rem;
+}
+
+.hcc-exchange__import {
+  font-family: var(--hcc-font-mono);
+  inline-size: 100%;
+  min-block-size: 14rem;
+  resize: vertical;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.hcc-exchange__controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-block-start: 0.65rem;
+}
+
+.hcc-exchange__diagnostics:not(:empty) {
+  border-inline-start: 3px solid var(--hcc-danger);
+  padding-inline-start: 1.5rem;
+}
+
+.hcc-exchange__diagnostic-source,
+.hcc-exchange__diagnostic-source code {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+@media (max-width: 500px) {
+  .hcc-widget__header,
+  .hcc-widget__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hcc-widget__description-list {
+    grid-template-columns: 1fr;
+  }
+
+  .hcc-workbook__question-item,
+  .hcc-workbook__manifest-item {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .hcc-workbook__packet-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .hcc-dashboard__toolbar {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .hcc-studio__toolbar {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .hcc-exchange__controls {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .hcc-studio__scale-list ol {
+    columns: 1;
+  }
+
+  .hcc-widget__description-list dt {
+    border-block-end: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hcc-widget,
+  .hcc-widget *,
+  .hcc-view,
+  .hcc-view *,
+  .hcc-workbook,
+  .hcc-workbook *,
+  .hcc-extension,
+  .hcc-extension * {
+    animation-duration: 0ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .hcc-widget,
+  .hcc-widget__adjacent-item,
+  .hcc-view,
+  .hcc-workbook,
+  .hcc-extension {
+    border: 1px solid CanvasText;
+  }
+
+  .hcc-radar__series {
+    fill: none;
+    stroke: CanvasText;
+  }
+
+  .hcc-radar__label-box {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+
+  .hcc-radar__label {
+    fill: CanvasText;
+    stroke: Canvas;
+  }
+
+  .hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"]) {
+    appearance: auto;
+    border: initial;
+    box-shadow: none;
+    forced-color-adjust: auto;
+  }
+
+  .hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"])::before {
+    content: none;
+  }
+
+  .hcc-workbook__focus-stage {
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .hcc-widget__matrix td[data-selected="true"] {
+    outline: 3px solid Highlight;
+    outline-offset: -3px;
+  }
+
+  .hcc-widget__option:has(input:checked),
+  .hcc-widget__rating-values button[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+    outline-offset: -3px;
+  }
+
+  .hcc-widget__button:focus-visible,
+  .hcc-widget input:focus-visible,
+  .hcc-widget textarea:focus-visible,
+  .hcc-widget select:focus-visible,
+  .hcc-widget summary:focus-visible {
+    outline-color: Highlight;
+  }
+}

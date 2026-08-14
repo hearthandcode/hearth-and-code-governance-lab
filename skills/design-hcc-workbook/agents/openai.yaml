@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design HCC Workbook"
+  short_description: "Design bounded governed worksheets and workbooks"
+  default_prompt: "Use $design-hcc-workbook to design a focused HCC workbook for this decision."

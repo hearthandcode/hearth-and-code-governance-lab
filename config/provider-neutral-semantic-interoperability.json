@@ -1,0 +1,25 @@
+{
+  "version": "0.1-candidate.1",
+  "status": "accepted-specification-only",
+  "effectCeiling": "no-external-runtime-adapter",
+  "normalizedTypes": [
+    "interaction-definition", "interaction-response", "worksheet-definition", "workbook-definition",
+    "view-definition", "response-packet", "governance-projection", "exchange-packet"
+  ],
+  "fixturePairs": [
+    { "id": "interaction", "local": "hcc-interaction", "portable": "interaction-definition" },
+    { "id": "response", "local": "response", "portable": "interaction-response" },
+    { "id": "worksheet", "local": "hcc-form", "portable": "worksheet-definition" },
+    { "id": "workbook", "local": "hcc-workbook", "portable": "workbook-definition" },
+    { "id": "view", "local": "hcc-view", "portable": "view-definition" },
+    { "id": "packet", "local": "hcc-worksheet-response-packet", "portable": "response-packet" },
+    { "id": "governance", "local": "governance-dashboard", "portable": "governance-projection" },
+    { "id": "exchange", "local": "hcc-exchange", "portable": "exchange-packet" }
+  ],
+  "responsePort": { "direction": "candidate-return-only", "immutable": true, "digestRequired": true, "canonicalWriteBack": false, "implementation": "held" },
+  "retirementCriteria": [
+    "semantic-interoperability-suite-passes", "migration-map-reviewed", "private-response-port-separately-authorized",
+    "local-data-export-proven", "rollback-route-proven", "deprecation-window-published",
+    "destination-semantic-owner-accepts", "integration-owner-accepts"
+  ]
+}

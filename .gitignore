@@ -1,0 +1,11 @@
+node_modules/
+scratch-vault/.obsidian/plugins/
+scratch-vault/.obsidian/app.json
+scratch-vault/.obsidian/appearance.json
+scratch-vault/.obsidian/core-plugins.json
+scratch-vault/.obsidian/community-plugins.json
+scratch-vault/.obsidian/workspace.json
+scratch-vault/.obsidian/workspace-mobile.json
+scratch-vault/.trash/
+scratch-vault/cosmatrexis-cognitive-personality-ai-interaction-guide.md
+*.log

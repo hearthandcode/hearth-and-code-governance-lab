@@ -1,0 +1,11 @@
+{
+  "version": "0.1-candidate.1",
+  "directoryId": "hcc-widget-lab",
+  "manifestOverrides": {
+    "id": "hcc-widget-lab",
+    "name": "Hearth & Code Governed Widgets",
+    "author": "Hearth & Code",
+    "authorUrl": "https://hearthandcode.com"
+  },
+  "scope": "disposable-scratch-vault-only"
+}

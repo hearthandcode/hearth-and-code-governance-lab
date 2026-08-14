@@ -1,0 +1,53 @@
+{
+  "name": "hearth-and-code-governance-lab",
+  "version": "0.0.32",
+  "private": true,
+  "type": "module",
+  "description": "Governed HCC inputs, workbooks, provenance tools, visual projections, and schema/workflow design for Obsidian.",
+  "author": "Scott Rallya",
+  "homepage": "https://hearthandcode.dev",
+  "keywords": [
+    "obsidian",
+    "hcc",
+    "governance",
+    "forms",
+    "worksheets",
+    "visualization",
+    "provenance"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "node esbuild.config.mjs production",
+    "dev": "node esbuild.config.mjs",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "smoke:bundle": "node scripts/smoke-bundle-load.mjs",
+    "audit:local": "node scripts/audit-local.mjs",
+    "audit:accessibility": "vitest run tests/accessibility-audit.test.ts",
+    "audit:contrast": "vitest run tests/contrast-audit.test.ts --reporter=verbose",
+    "proof:identity-migration": "node scripts/check-identity-migration.mjs",
+    "proof:interoperability": "node scripts/check-provider-neutral-semantic-interoperability.ts",
+    "proof:c7-parity": "npm run proof:interoperability",
+    "proof:install-layout": "node scripts/verify-install-layout.mjs",
+    "benchmark:synthetic": "vitest run tests/performance-receipt.test.ts --reporter=verbose",
+    "check:release-candidate": "node scripts/validate-release-candidate.mjs",
+    "proof:clean-room": "node scripts/verify-clean-room.mjs",
+    "proof:public-source": "node scripts/verify-public-source-boundary.mjs",
+    "materialize:public-source": "node scripts/verify-public-source-boundary.mjs --materialize",
+    "review:public-disclosure": "node scripts/verify-public-source-boundary.mjs --manifest-only --write-disclosure-review reviews/phase-1.0/v0.0.29-agent-onboarding-public-source-disclosure-review.md",
+    "proof": "npm run audit:local && npm run check && npm run test && npm run proof:interoperability && npm run build && npm run proof:install-layout && npm run check:release-candidate && npm run smoke:bundle"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.0.0",
+    "builtin-modules": "^4.0.0",
+    "esbuild": "^0.25.0",
+    "happy-dom": "^20.11.2",
+    "obsidian": "1.8.7",
+    "typescript": "~5.8.3",
+    "vitest": "^4.0.0"
+  }
+}

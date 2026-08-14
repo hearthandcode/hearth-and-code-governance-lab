@@ -1,0 +1,50 @@
+name: Feature proposal
+description: Propose a bounded capability with its contract and effect ceiling.
+title: "[Proposal]: "
+labels: [proposal, needs-governance-review]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User outcome
+      description: What decision or task becomes materially easier?
+    validations: { required: true }
+  - type: dropdown
+    id: class
+    attributes:
+      label: Primary change class
+      options: [Interaction grammar, Visualization, Worksheet or workbook, Schema or workflow studio, Dashboard projection, Authoring API, Response writer, Documentation, Other]
+    validations: { required: true }
+  - type: textarea
+    id: source-contract
+    attributes:
+      label: Source and contract
+      description: Name the source-visible grammar, version, identity, validation rules, and accessible fallback.
+    validations: { required: true }
+  - type: checkboxes
+    id: effects
+    attributes:
+      label: Requested effects
+      description: Select every effect the proposal would need. Unselected effects remain prohibited.
+      options:
+        - label: Render local source
+        - label: Copy to clipboard
+        - label: Read one explicitly named vault path
+        - label: Create one new immutable vault record
+        - label: Modify an existing vault record or frontmatter
+        - label: Scan or index the vault
+        - label: Use network, provider credentials, or paid APIs
+        - label: Write to Hub, Exocore, or another canonical system
+        - label: Publish, release, or submit externally
+  - type: textarea
+    id: threats
+    attributes:
+      label: Failure modes and recovery
+      description: Include privacy, provenance, accessibility, stale-source, partial-effect, and rollback concerns.
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Acceptance evidence
+      description: List positive, negative, accessibility, security, performance, compatibility, and human-review evidence.
+    validations: { required: true }

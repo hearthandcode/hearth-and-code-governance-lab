@@ -1,0 +1,4 @@
+interface:
+  display_name: "Author HCC Content"
+  short_description: "Create valid governed HCC Markdown blocks"
+  default_prompt: "Use $author-hcc-content to create a validated HCC interaction and form."

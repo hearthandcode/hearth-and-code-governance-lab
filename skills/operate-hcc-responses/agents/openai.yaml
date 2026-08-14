@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operate HCC Responses"
+  short_description: "Reload and amend immutable response packets"
+  default_prompt: "Use $operate-hcc-responses to safely reload and amend this HCC response packet."

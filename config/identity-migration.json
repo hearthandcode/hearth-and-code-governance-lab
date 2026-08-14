@@ -1,0 +1,76 @@
+{
+  "version": "0.1-candidate.1",
+  "displayName": "Hearth & Code Governed Widgets",
+  "candidatePublicDisplayName": "Hearth and Code Governance Lab",
+  "candidatePublicDisplayNameAccepted": true,
+  "prototypeId": "hcc-widget-lab",
+  "candidatePublicId": "hearth-and-code-governance-lab",
+  "candidatePublicIdAccepted": true,
+  "requiredScenarioCount": 8,
+  "scenarios": [
+    {
+      "id": "prototype-continuity",
+      "manifestId": "hcc-widget-lab",
+      "directoryId": "hcc-widget-lab",
+      "installedIds": ["hcc-widget-lab"],
+      "expected": "allow-current",
+      "humanEvidence": "Existing disposable-vault installation continues to load under its unchanged compatibility ID."
+    },
+    {
+      "id": "clean-public-install",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hearth-and-code-governance-lab",
+      "installedIds": ["hearth-and-code-governance-lab"],
+      "expected": "candidate-only",
+      "humanEvidence": "Install the three accepted release assets in a clean vault and inspect first enablement."
+    },
+    {
+      "id": "in-place-rename",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hcc-widget-lab",
+      "installedIds": ["hcc-widget-lab"],
+      "expected": "block",
+      "humanEvidence": "No host test is permitted because manifest and directory identity disagree by construction."
+    },
+    {
+      "id": "side-by-side-install",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hearth-and-code-governance-lab",
+      "installedIds": ["hcc-widget-lab", "hearth-and-code-governance-lab"],
+      "expected": "block",
+      "humanEvidence": "Do not enable two identities that register the same fences, views, commands, and writer surface."
+    },
+    {
+      "id": "public-upgrade",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hearth-and-code-governance-lab",
+      "installedIds": ["hearth-and-code-governance-lab"],
+      "expected": "candidate-only",
+      "humanEvidence": "Replace only the three assets under the same accepted ID and verify behavior and retained packets."
+    },
+    {
+      "id": "public-rollback",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hearth-and-code-governance-lab",
+      "installedIds": ["hearth-and-code-governance-lab"],
+      "expected": "candidate-only",
+      "humanEvidence": "Restore the prior three assets without rewriting immutable packets and record compatibility findings."
+    },
+    {
+      "id": "disable-reenable",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hearth-and-code-governance-lab",
+      "installedIds": ["hearth-and-code-governance-lab"],
+      "expected": "candidate-only",
+      "humanEvidence": "Confirm processors and views unregister/re-register while vault-local packets remain ordinary files."
+    },
+    {
+      "id": "public-uninstall",
+      "manifestId": "hearth-and-code-governance-lab",
+      "directoryId": "hearth-and-code-governance-lab",
+      "installedIds": ["hearth-and-code-governance-lab"],
+      "expected": "candidate-only",
+      "humanEvidence": "Confirm plugin removal does not imply deletion of separately created Intake response packets."
+    }
+  ]
+}

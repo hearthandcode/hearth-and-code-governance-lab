@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project HCC Governance"
+  short_description: "Create bounded provenance and dashboard views"
+  default_prompt: "Use $project-hcc-governance to project a governed dashboard from explicit source references."

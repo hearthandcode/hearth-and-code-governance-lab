@@ -1,0 +1,17 @@
+{
+  "version": "0.1-candidate.1",
+  "project": {
+    "name": "Hearth and Code Governance Lab",
+    "pluginId": "hearth-and-code-governance-lab",
+    "repository": "hearthandcode/hearth-and-code-governance-lab"
+  },
+  "author": "Scott Rallya",
+  "responsibleOrganization": "Hearth & Code",
+  "initialMaintainer": "fractalis",
+  "securityContact": "admin@hearthandcode.dev",
+  "support": { "posture": "best-effort", "responseTimePromise": null },
+  "release": { "cadence": "readiness-driven", "defaultBranch": "main", "integrationBranch": "draft", "featureBranchPattern": "feature/*", "versioning": "semver" },
+  "supportedPlatforms": ["desktop-current", "desktop-minimum"],
+  "unsupportedPlatforms": ["android", "ios-ipados"],
+  "privateContextExcluded": true
+}

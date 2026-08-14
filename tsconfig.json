@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "allowJs": false,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "moduleResolution": "Node",
+    "importHelpers": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "lib": ["DOM", "ES2022"]
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
+}

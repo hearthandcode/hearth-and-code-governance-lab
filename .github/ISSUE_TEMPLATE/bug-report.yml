@@ -1,0 +1,58 @@
+name: Bug report
+description: Report a reproducible defect without including private vault content.
+title: "[Bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        This project is still a prerelease. Use synthetic or redacted examples only.
+        Do not attach private notes, response packets, credentials, or Hub material.
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      placeholder: 0.0.25
+    validations: { required: true }
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Obsidian version
+    validations: { required: true }
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options: [Linux desktop, macOS desktop, Windows desktop, Android, iOS or iPadOS, Other]
+    validations: { required: true }
+  - type: dropdown
+    id: view-mode
+    attributes:
+      label: View mode
+      options: [Reading view, Live Preview, Source mode, Native dashboard, Settings or plugin loading, Other]
+    validations: { required: true }
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Give exact steps using the disposable vault or a minimal redacted fence.
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected result }
+    validations: { required: true }
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result and diagnostics
+      description: Paste exact error text after removing private paths and content.
+    validations: { required: true }
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I removed private vault content, response values, credentials, and identifying paths.
+          required: true
+        - label: I reproduced this in the disposable scratch vault or with synthetic data.
+          required: true
