@@ -2,9 +2,26 @@
 
 ## Unreleased
 
+<<<<<<< HEAD
 - Published the exact 0.0.33 source after fresh locked reproduction, 47-file/308-test proof, public-boundary verification, and a zero-finding production dependency audit.
 - Completed the exact public-ID rollback, re-upgrade, recoverable uninstall, restoration, settings-retention, and retained-packet lifecycle while preserving the bounded limits of the accepted host review.
 - Added a pinned, read-only hosted-assurance workflow. GitHub release packaging remains held until that workflow passes; Community submission remains separately unauthorized.
+||||||| parent of bc28f71 (feat(writer): per-workspace target_folder_override (0.0.34 candidate))
+- Materialized the accepted public projection as a clean local Git source and proved the committed 0.0.32 tree from a fresh offline clone with locked dependency installation, the complete test/build/install/smoke suite, and a zero-finding production dependency audit. The reproducible-source gate now passes while exact-candidate lifecycle, host, hosted, remote, release, and Community-submission gates remain open.
+=======
+- 0.0.34 candidate under integration-owner preparation; see the 0.0.34 entry below.
+
+## 0.0.34 - 2026-08-16
+
+- Added an explicit per-workspace `target_folder_override` that admits any project-home-relative response-packet folder satisfying the existing safePath shape rule; preserved the legacy literal `Intake/HCC Responses/` as `RESPONSE_PACKET_DEFAULT_FOLDER` and as a deprecated alias for one release.
+- Replaced the historical `safeIntakeFolder` writer policy validator with `safeTargetFolder`, which delegates to the same shape validator used for every other vault-relative path; the prior Intake-prefix restriction is removed without weakening traversal, scheme, hidden-segment, or platform-reserved-device rejection.
+- Threaded the configured folder through the response-packet adapter constructor via a new optional `folder` parameter and exposed `resolveResponsePacketFolder(worksheetFolder)` plus a `ResponsePacketFolderConfig` source descriptor so the runtime capability catalog reports the active folder; the legacy single-literal folder remains the default for backward compatibility.
+- Added an opt-in `configuredFolder` parameter to the worksheet packet locator and updated the locator-path error message to name the configured folder instead of a hard-coded prefix, so reload locators can resolve to per-workspace response folders when the worksheet and adapter agree on the override.
+- Updated the capability descriptor in the plugin capability catalog to report "configured response-packet folder" instead of the historical literal, preserving every prohibited-effect declaration and the exact two-profile host-policy boundary.
+- Refreshed the SKILL documentation for the `operate-hcc-responses` skill so the human-facing operation guide describes the worksheet-level override and the adapter-level folder option alongside the legacy default path; preserved the exact-path, digest-verified-readback, no-overwrite/no-rename/no-append/no-delete write policy under either folder.
+- Confirmed the local-folder change on a per-workspace emulator by passing and reading packets at the configured folder, rejecting traversal-shaped configured folders with a fresh `HCC-VAULT-CFG` diagnostic, and verifying that the legacy Intake/HCC Responses prefix continues to validate when no override is configured.
+- Bumped the public plugin version to 0.0.34 across `package.json` and `manifest.json`; retained the GitHub release-packaging hold and the Community submission hold from the preceding release flow until Scott completes the integration-owner steps.
+>>>>>>> bc28f71 (feat(writer): per-workspace target_folder_override (0.0.34 candidate))
 
 ## 0.0.32 - 2026-08-14
 

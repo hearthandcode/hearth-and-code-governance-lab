@@ -7,10 +7,16 @@ export interface WorksheetPacketLocator {
   digest: string;
 }
 
+/**
+ * The configured packet folder a Locator must validate against. The historic
+ * "Intake/HCC Responses/" prefix is the default for backward compatibility.
+ */
+export const WORKSHEET_PACKET_LOCATOR_DEFAULT_FOLDER = "Intake/HCC Responses" as const;
+
 const MAX_LOCATOR_BYTES = 512;
 const PACKET_DIGEST = /^sha256:[a-f0-9]{64}$/;
 
-export function parseWorksheetPacketLocator(source: string): WorksheetPacketLocator {
+export function parseWorksheetPacketLocator(source: string, configuredFolder: string = WORKSHEET_PACKET_LOCATOR_DEFAULT_FOLDER): WorksheetPacketLocator {
   if (new TextEncoder().encode(source).byteLength > MAX_LOCATOR_BYTES) throw new Error("HCC-LOCATOR-SIZE: reload locator exceeds 512 UTF-8 bytes.");
   let value: unknown;
   try { value = load(source, { schema: JSON_SCHEMA }); }
@@ -18,7 +24,9 @@ export function parseWorksheetPacketLocator(source: string): WorksheetPacketLoca
   if (!isRecord(value)) throw new Error("HCC-LOCATOR-SHAPE: reload locator must be one YAML mapping.");
   const keys = Object.keys(value).sort();
   if (JSON.stringify(keys) !== JSON.stringify(["packet_digest", "packet_path"])) throw new Error("HCC-LOCATOR-FIELDS: reload locator requires exactly packet_path and packet_digest.");
-  if (typeof value.packet_path !== "string" || !explicitResponsePacketPath(value.packet_path)) throw new Error("HCC-LOCATOR-PATH: packet_path must match a create-only packet path: one ASCII letter/digit-leading .yaml leaf using only letters, digits, underscore, or hyphen directly under Intake/HCC Responses/.");
+  if (typeof value.packet_path !== "string" || !explicitResponsePacketPath(value.packet_path, configuredFolder)) {
+    throw new Error(`HCC-LOCATOR-PATH: packet_path must match a create-only packet path: one ASCII letter/digit-leading .yaml leaf using only letters, digits, underscore, or hyphen directly under ${configuredFolder}/.`);
+  }
   if (typeof value.packet_digest !== "string" || !PACKET_DIGEST.test(value.packet_digest)) throw new Error("HCC-LOCATOR-DIGEST: packet_digest must be lowercase sha256 followed by 64 hexadecimal characters.");
   return Object.freeze({ path: value.packet_path, digest: value.packet_digest });
 }

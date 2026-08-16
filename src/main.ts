@@ -260,7 +260,7 @@ export default class HearthCodeGovernedWidgetsPlugin extends Plugin implements H
     try { hostProfile = responsePacketHostProfile(this.manifest.id, this.app.vault.getName()); } catch { /* read-only fail-closed status */ }
     return {
       hostProfile,
-      responsePolicy: "Intake/HCC Responses/ · one explicit digest-verified read · create-only immutable YAML · no overwrite, rename, append, or delete",
+      responsePolicy: "configured response-packet folder · one explicit digest-verified read · create-only immutable YAML · no overwrite, rename, append, or delete",
       contractStatus: `${this.authoringApi.apiVersion} · ${Object.keys(PLUGIN_CAPABILITY_CATALOG).length} governed capabilities`,
       runtimeStatus: `Obsidian API ${apiVersion} · minimum ${this.manifest.minAppVersion} · ${Platform.isDesktop ? "desktop" : "unsupported non-desktop"}`
     };

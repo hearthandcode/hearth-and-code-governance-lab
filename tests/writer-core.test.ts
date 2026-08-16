@@ -73,4 +73,17 @@ describe("pure response writer core", () => {
     expect(writer.create(result.plan, true)).toMatchObject({ result: "created", effect: "in-memory-test-only" }); expect(writer.read(result.plan.targetPath)).toBe(packet);
     expect(() => writer.create(result.plan, true)).toThrow("HCC-WRITER-COLLISION");
   });
+  it("accepts a per-workspace target_folder override pointing at a project home subdirectory", async () => {
+    const overrideFolder = "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake/_responses";
+    const overridePolicy = policy.replace("target_folder: Intake/HCC Responses", `target_folder: ${overrideFolder}`);
+    const result = await compileResponseWritePlan(packet, overridePolicy, context, digest);
+    expect(result.ok).toBe(true); if (!result.ok) return;
+    expect(result.plan.targetPath).toBe(`${overrideFolder}/writer-proof--worksheet-session-20260811120000.yaml`);
+  });
+  it("still rejects an override folder that violates the safePath shape rule (traversal segment)", async () => {
+    const badFolder = "04-workspace--scriptorium/projects/../escape/intake/_responses";
+    const badPolicy = policy.replace("target_folder: Intake/HCC Responses", `target_folder: ${badFolder}`);
+    const result = await compileResponseWritePlan(packet, badPolicy, context, digest);
+    expect(result.ok).toBe(false);
+  });
 });

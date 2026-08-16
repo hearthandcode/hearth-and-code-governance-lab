@@ -406,7 +406,7 @@ function renderResponsePacketPanel(
   details.open = false;
   details.append(node("summary", undefined, "Reload, amend, or inspect packet details"));
   const body = node("div", "hcc-workbook__packet-body");
-  body.append(node("p", "hcc-widget__held-note", "Complete, review, finalize, preview, confirm, and create one immutable packet under Intake/HCC Responses/. A successful verified create copies its exact reload locator when clipboard access is available."));
+  body.append(node("p", "hcc-widget__held-note", "Complete, review, finalize, preview, confirm, and create one immutable packet under the worksheet's configured response-packet folder (default Intake/HCC Responses/). A successful verified create copies its exact reload locator when clipboard access is available."));
 
   const releaseStages = [
     "1 · Answer", "2 · Review", "3 · Finalize", "4 · Prepare or copy", "5 · Preview", "6 · Confirm", "7 · Create", "8 · Share locator"

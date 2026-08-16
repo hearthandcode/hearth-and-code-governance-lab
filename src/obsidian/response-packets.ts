@@ -8,7 +8,11 @@ import {
 
 export {
   responsePacketHostProfile,
+  resolveResponsePacketFolder,
+  type ResponsePacketFolderConfig,
+  type VaultResponsePacketAdapterOptions,
   RESPONSE_PACKET_CANARY_VAULT,
+  RESPONSE_PACKET_DEFAULT_FOLDER,
   RESPONSE_PACKET_FOLDER,
   RESPONSE_PACKET_PROTOTYPE_PLUGIN_ID,
   RESPONSE_PACKET_PUBLIC_PLUGIN_ID,

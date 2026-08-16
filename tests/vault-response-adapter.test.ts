@@ -84,4 +84,34 @@ describe("Obsidian vault response-packet canary adapter", () => {
     expect(vault.createdFolders).toEqual([]);
     expect(vault.files.size).toBe(0);
   });
+
+  it("accepts a per-workspace folder option and writes the configured hierarchy", async () => {
+    const vault = new FakeVault();
+    const configuredFolder = "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake/_responses";
+    const adapter = new VaultResponsePacketAdapter(vault, { folder: configuredFolder });
+    const candidate = await plan(`${configuredFolder}/proof.yaml`);
+    const receipt = await adapter.createOnly(candidate, true);
+    expect(vault.createdFolders).toEqual([
+      "04-workspace--scriptorium",
+      "04-workspace--scriptorium/projects",
+      "04-workspace--scriptorium/projects/ember-circuit-brand-system",
+      "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake",
+      configuredFolder
+    ]);
+    expect(vault.files.get(candidate.targetPath)).toBe(candidate.bytes);
+    expect(receipt.targetPath).toBe(candidate.targetPath);
+  });
+
+  it("rejects legacy-prefix packets when the adapter is configured for a different project home", async () => {
+    const vault = new FakeVault();
+    const configuredFolder = "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake/_responses";
+    const adapter = new VaultResponsePacketAdapter(vault, { folder: configuredFolder });
+    await expect(adapter.createOnly(await plan("Intake/HCC Responses/proof.yaml"), true)).rejects.toThrow("restricted");
+    expect(vault.createdFolders).toEqual([]);
+  });
+
+  it("refuses an adapter constructor folder that violates the safePath shape rule", () => {
+    const vault = new FakeVault();
+    expect(() => new VaultResponsePacketAdapter(vault, { folder: "04-workspace--scriptorium/projects/../escape/intake/_responses" })).toThrow("HCC-VAULT-CFG");
+  });
 });

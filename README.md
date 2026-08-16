@@ -50,8 +50,8 @@ The current Intake Response Envelope v0.2 also has no lossless `deferred` field-
 
 - Inputs begin in plugin-session memory and disappear when the plugin reloads or is disabled unless explicitly saved as an immutable packet.
 - The prototype profile accepts only plugin ID `hcc-widget-lab` in the vault named `scratch-vault`. The public profile accepts only plugin ID `hearth-and-code-governance-lab` in its currently open named local vault. Unknown identities and empty vault names fail closed.
-- Both profiles use the same sole write path: new immutable YAML files under `Intake/HCC Responses/` after per-write confirmation and exact read-back verification.
-- The effect adapter accepts exactly one generated ASCII `.yaml` leaf directly beneath that folder. Nested paths, traversal, schemes, hidden segments, controls, cross-platform-invalid characters, and reserved device names fail before any vault-port call.
+- Both profiles share the same sole write policy: create-only, immutable, explicit-path, digest-verified read-back, no overwrite, no rename, no append, no delete. The default response-packet folder is `Intake/HCC Responses/`. Worksheets that declare a per-workspace `target_folder_override` use that override, which is a project-home-relative path satisfying the same safePath shape rule the writer policy enforces; new immutable YAML files are created under the resolved folder after per-write confirmation and exact read-back verification.
+- The effect adapter accepts exactly one generated ASCII `.yaml` leaf directly beneath the resolved folder. Nested paths, traversal, schemes, hidden segments, controls, cross-platform-invalid characters, reserved device names, and configured folders that violate the safePath shape rule fail before any vault-port call.
 - Reload reads one explicit packet path only and requires its expected SHA-256 digest. It never searches for packets.
 - No overwrite, append, rename, deletion, source/frontmatter mutation, workflow transition, submission, external-system write, or canonical intake.
 - No network, telemetry, remote asset, provider, listener, local server, shell, arbitrary JavaScript, or dynamic import.

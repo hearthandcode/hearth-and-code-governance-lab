@@ -1,6 +1,13 @@
 import { explicitResponsePacketPath, webCryptoSha256, type CreateOnlyCandidatePlan, type VaultPacketWriteReceipt } from "../writer";
 
-export const RESPONSE_PACKET_FOLDER = "Intake/HCC Responses" as const;
+/**
+ * The default response-packet folder used when a worksheet or caller does not
+ * declare a per-workspace override. The legacy literal is preserved for one
+ * release; the configured-folder path is preferred in new code.
+ */
+export const RESPONSE_PACKET_DEFAULT_FOLDER = "Intake/HCC Responses" as const;
+/** @deprecated use RESPONSE_PACKET_DEFAULT_FOLDER; legacy alias retained for one release */
+export const RESPONSE_PACKET_FOLDER = RESPONSE_PACKET_DEFAULT_FOLDER;
 export const RESPONSE_PACKET_CANARY_VAULT = "scratch-vault" as const;
 export const RESPONSE_PACKET_PROTOTYPE_PLUGIN_ID = "hcc-widget-lab" as const;
 export const RESPONSE_PACKET_PUBLIC_PLUGIN_ID = "hearth-and-code-governance-lab" as const;
@@ -24,18 +31,61 @@ export interface ResponsePacketVaultPort {
   create(path: string, bytes: string): Promise<void>;
 }
 
+export interface VaultResponsePacketAdapterOptions {
+  /** Configured target folder; defaults to the legacy `Intake/HCC Responses` literal when omitted. */
+  folder?: string;
+}
+
+export interface ResponsePacketFolderConfig {
+  folder: string;
+  source: "default" | "configured";
+}
+
+/**
+ * Resolve the configured response-packet folder for a worksheet context.
+ * Falls back to the legacy default when no override is provided.
+ * Validates the configured folder against the same shape rule used by
+ * the writer policy validator.
+ */
+export function resolveResponsePacketFolder(worksheetFolder?: string): ResponsePacketFolderConfig {
+  if (typeof worksheetFolder === "string" && worksheetFolder.trim().length > 0) {
+    assertValidVaultFolder(worksheetFolder);
+    return { folder: worksheetFolder.replace(/\/+$/, ""), source: "configured" };
+  }
+  return { folder: RESPONSE_PACKET_DEFAULT_FOLDER, source: "default" };
+}
+
+function assertValidVaultFolder(value: string): void {
+  if (value.length > 200 || value.trim() !== value || value === "" || value.startsWith("/") || value.includes("\\") || value.includes("\0") || /^[a-z][a-z0-9+.-]*:/i.test(value)) {
+    throw new Error(`HCC-VAULT-CFG: configured folder ${value || "<empty>"} fails shape rule; expected a bounded, normalized, non-hidden vault-relative path without traversal or a URI scheme.`);
+  }
+  for (const part of value.split("/")) {
+    if (part === "" || part === "." || part === ".." || part.startsWith(".")) {
+      throw new Error(`HCC-VAULT-CFG: configured folder ${value} contains a hidden, empty, or traversal segment.`);
+    }
+  }
+}
+
 export class VaultResponsePacketAdapter {
-  constructor(private readonly vault: ResponsePacketVaultPort) {}
+  private readonly folderConfig: ResponsePacketFolderConfig;
+
+  constructor(private readonly vault: ResponsePacketVaultPort, options: VaultResponsePacketAdapterOptions = {}) {
+    this.folderConfig = resolveResponsePacketFolder(options.folder);
+  }
+
+  getResponsePacketFolder(): ResponsePacketFolderConfig {
+    return this.folderConfig;
+  }
 
   async readExplicit(packetPath: string): Promise<string> {
-    assertPacketPath(packetPath);
+    assertPacketPath(packetPath, this.folderConfig.folder);
     if (this.vault.kind(packetPath) !== "file") throw new Error(`HCC-VAULT-READ-MISSING: ${packetPath}`);
     return this.vault.read(packetPath);
   }
 
   async createOnly(plan: CreateOnlyCandidatePlan, confirmed: boolean): Promise<VaultPacketWriteReceipt> {
     if (!confirmed) throw new Error("HCC-VAULT-CONFIRMATION: explicit per-write confirmation is required.");
-    assertPacketPath(plan.targetPath);
+    assertPacketPath(plan.targetPath, this.folderConfig.folder);
     await this.ensureFolders(plan.targetPath);
     if (this.vault.kind(plan.targetPath) !== null) throw new Error(`HCC-VAULT-COLLISION: ${plan.targetPath} already exists.`);
     await this.vault.create(plan.targetPath, plan.bytes);
@@ -65,8 +115,8 @@ export class VaultResponsePacketAdapter {
   }
 }
 
-function assertPacketPath(value: string): void {
-  if (!explicitResponsePacketPath(value)) {
-    throw new Error(`HCC-VAULT-TARGET: response packets are restricted to ${RESPONSE_PACKET_FOLDER}/.`);
+function assertPacketPath(value: string, configuredFolder: string): void {
+  if (!explicitResponsePacketPath(value, configuredFolder)) {
+    throw new Error(`HCC-VAULT-TARGET: response packets are restricted to ${configuredFolder}/ (configure the adapter's folder option for a different project home).`);
   }
 }

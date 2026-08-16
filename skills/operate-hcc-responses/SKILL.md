@@ -30,7 +30,7 @@ Preserve answers as immutable intake candidates while keeping every read and wri
 ## Reload explicitly
 
 1. Require exactly `packet_path` and `packet_digest`.
-2. Require one `.yaml` leaf directly under `Intake/HCC Responses/`.
+2. Require one `.yaml` leaf directly under the worksheet's configured response-packet folder. If the worksheet declares a per-workspace `target_folder_override`, the leaf is one `.yaml` directly under that override and the locator must carry the same configured folder. Worksheets omitting the override use the legacy `Intake/HCC Responses/` folder.
 3. Require lowercase `sha256:` plus sixty-four hexadecimal characters.
 4. Paste the locator into the editable locator block and apply it.
 5. Inspect the populated path and digest before loading.

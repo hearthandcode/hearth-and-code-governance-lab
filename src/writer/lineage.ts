@@ -67,9 +67,9 @@ export function validAmendmentReason(value: string): boolean {
   return normalized.length > 0 && value.length <= 1000 && normalized !== AMENDMENT_REASON_GUIDANCE;
 }
 
-export function explicitResponsePacketPath(value: string): boolean {
-  const prefix = "Intake/HCC Responses/";
-  const leaf = value.startsWith(prefix) ? value.slice(prefix.length) : "";
+export function explicitResponsePacketPath(value: string, prefix: string = "Intake/HCC Responses/"): boolean {
+  const normalizedPrefix = prefix.endsWith("/") ? prefix : `${prefix}/`;
+  const leaf = value.startsWith(normalizedPrefix) ? value.slice(normalizedPrefix.length) : "";
   return explicitYamlPath(value) && /^[A-Za-z0-9][A-Za-z0-9_-]{0,199}\.yaml$/.test(leaf);
 }
 

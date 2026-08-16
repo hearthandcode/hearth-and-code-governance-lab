@@ -37,7 +37,7 @@ export function parseResponseWritePolicy(source: string): { ok: true; policy: Re
   exact(value.record_type, "hcc-response-write-policy-candidate", "$.record_type", diagnostics);
   exact(value.contract_version, "0.1-candidate.1", "$.contract_version", diagnostics);
   exact(value.mode, "immutable-new-file", "$.mode", diagnostics); exact(value.vault_scope, "current-vault", "$.vault_scope", diagnostics);
-  safeIntakeFolder(value.target_folder, "$.target_folder", diagnostics);
+  safeTargetFolder(value.target_folder, "$.target_folder", diagnostics);
   exact(value.filename_template, "{worksheet_id}--{session_id}.yaml", "$.filename_template", diagnostics);
   exact(value.content_format, "yaml", "$.content_format", diagnostics); exact(value.conflict, "fail", "$.conflict", diagnostics);
   exact(value.require_source_digest, true, "$.require_source_digest", diagnostics); exact(value.require_complete, true, "$.require_complete", diagnostics);
@@ -89,7 +89,7 @@ function privacyList(value: unknown, diagnostics: WriterDiagnostic[]): void {
   const allowed = new Set(["private", "restricted", "internal", "public"]);
   if (!Array.isArray(value) || value.length === 0 || value.some((item) => typeof item !== "string" || !allowed.has(item)) || new Set(value).size !== value.length) diagnostic(diagnostics, "HCC-WRITER-SCHEMA", "$.allowed_privacy", "allowed_privacy must be a unique, non-empty list of recognized privacy values.");
 }
-function safeIntakeFolder(value: unknown, path: string, diagnostics: WriterDiagnostic[]): void { safePath(value, path, diagnostics); if (typeof value !== "string" || (value !== "Intake" && !value.startsWith("Intake/"))) diagnostic(diagnostics, "HCC-WRITER-TARGET", path, "The C2 candidate is restricted to an explicit Intake folder."); }
+function safeTargetFolder(value: unknown, path: string, diagnostics: WriterDiagnostic[]): void { safePath(value, path, diagnostics); }
 function safePath(value: unknown, path: string, diagnostics: WriterDiagnostic[]): void {
   if (typeof value !== "string" || value.length > 200 || value.trim() !== value || value === "" || value.startsWith("/") || value.includes("\\") || value.includes("\0") || /^[a-z][a-z0-9+.-]*:/i.test(value) || value.split("/").some((part) => part === "" || part === "." || part === ".." || part.startsWith("."))) diagnostic(diagnostics, "HCC-WRITER-TARGET", path, "Expected a bounded, normalized, non-hidden vault-relative path without traversal or a URI scheme.");
 }

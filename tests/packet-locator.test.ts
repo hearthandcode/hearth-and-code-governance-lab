@@ -36,4 +36,16 @@ describe("strict reload locator block", () => {
   ])("rejects %s", (_name, source, code) => {
     expect(() => parseWorksheetPacketLocator(source)).toThrow(String(code));
   });
+
+  it("accepts a packet path under a configured-folder override distinct from the legacy prefix", () => {
+    const overrideFolder = "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake/_responses";
+    const validOverride = `packet_path: ${overrideFolder}/override--session.yaml\npacket_digest: ${digest}\n`;
+    expect(parseWorksheetPacketLocator(validOverride, overrideFolder)).toEqual({ path: `${overrideFolder}/override--session.yaml`, digest });
+  });
+
+  it("rejects a packet path under a configured-folder override when the locator does not match", () => {
+    const overrideFolder = "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake/_responses";
+    const mismatched = `packet_path: Intake/HCC Responses/override--session.yaml\npacket_digest: ${digest}\n`;
+    expect(() => parseWorksheetPacketLocator(mismatched, overrideFolder)).toThrow("HCC-LOCATOR-PATH");
+  });
 });
