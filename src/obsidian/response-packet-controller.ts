@@ -17,6 +17,7 @@ import {
   type ResponseWritePlan,
   type VaultPacketWriteReceipt
 } from "../writer";
+import { resolveResponsePacketFolder } from "./vault-response-packet-adapter";
 
 export interface ResponsePacketEffectPort {
   readExplicit(path: string): Promise<string>;
@@ -25,7 +26,16 @@ export interface ResponsePacketEffectPort {
 
 export interface ResponsePacketControllerOptions {
   sessions: EphemeralWorkbookSessions;
-  adapter: () => ResponsePacketEffectPort;
+  /**
+   * Factory that builds an adapter scoped to a specific target folder.
+   * The folder is the value the worksheet declared via
+   * `target_folder_override`, resolved through `resolveResponsePacketFolder`
+   * so the adapter enforces the same shape rule the writer policy uses.
+   * The controller invokes this factory once per call site so each
+   * createOnly / readExplicit lands on an adapter constructed for the
+   * correct folder.
+   */
+  adapter: (folder: string) => ResponsePacketEffectPort;
   readWorksheetSource: (sourcePath: string) => Promise<string>;
   refreshInteractions: (sourcePath: string) => void;
 }
@@ -137,7 +147,7 @@ export class ResponsePacketController {
       if (sourceDigest !== pending.plan.source.digest) throw new Error("HCC-VAULT-PREVIEW: the worksheet source changed after preview; preview again.");
       const currentPacket = this.options.sessions.finalProposal(sourcePath, worksheet, { sourceDigest, persistence: "vault-local-create-only" });
       if (packetFingerprint(currentPacket) !== pending.packetFingerprint) throw new Error("HCC-VAULT-PREVIEW: worksheet responses changed after preview; preview again.");
-      const receipt = await this.options.adapter().createOnly(pending.plan, true);
+      const receipt = await this.options.adapter(this.worksheetFolder(worksheet)).createOnly(pending.plan, true);
       this.pendingInitialWrites.delete(sourcePath);
       this.options.sessions.beginSuccessor(sourcePath);
       return {
@@ -159,7 +169,7 @@ export class ResponsePacketController {
   }
 
   async load(sourcePath: string, worksheet: WorksheetContract, packetPath: string, packetDigest: string) {
-    const packetSource = await this.options.adapter().readExplicit(packetPath);
+    const packetSource = await this.options.adapter(this.worksheetFolder(worksheet)).readExplicit(packetPath);
     const sourceDigest = await this.currentWorksheetDigest(sourcePath);
     const result = await compileResponseReloadPlan(packetSource, {
       worksheetId: worksheet.id,
@@ -190,7 +200,7 @@ export class ResponsePacketController {
     confirmed: boolean,
     expected?: WorksheetPacketWriteResult
   ): Promise<WorksheetPacketWriteResult> {
-    const adapter = this.options.adapter();
+    const adapter = this.options.adapter(this.worksheetFolder(worksheet));
     if (expected !== undefined) {
       if (!confirmed) throw new Error("HCC-VAULT-CONFIRMATION: check the per-write confirmation before creating the previewed successor.");
       const pending = this.pendingAmendmentWrites.get(sourcePath);
@@ -255,6 +265,18 @@ export class ResponsePacketController {
 
   private async currentWorksheetDigest(sourcePath: string): Promise<string> {
     return webCryptoSha256(await this.options.readWorksheetSource(sourcePath));
+  }
+
+  /**
+   * Resolve the per-workspace target folder for the worksheet's response
+   * packets. The adapter factory receives this value so every createOnly /
+   * readExplicit lands on an adapter constructed for the correct folder.
+   * Validation matches the adapter's own shape rule (resolveResponsePacketFolder)
+   * so an invalid override produces the same error from the controller and
+   * the adapter.
+   */
+  private worksheetFolder(worksheet: WorksheetContract): string {
+    return resolveResponsePacketFolder(worksheet.target_folder_override).folder;
   }
 }
 

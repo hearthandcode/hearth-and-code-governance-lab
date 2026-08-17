@@ -24,10 +24,15 @@ export type { ResponsePacketVaultPort } from "./vault-response-packet-adapter";
  * The sole production factory for the response-packet writer. Keeping the
  * identity-and-host assertion here makes an unguarded adapter impossible to obtain
  * from the Obsidian bridge, even if the plugin lifecycle is later refactored.
+ * The `folder` argument is the per-workspace target folder override declared
+ * by the worksheet (or a resolved fallback). When omitted, the adapter enforces
+ * the legacy `Intake/HCC Responses` default — kept for one release so existing
+ * deployments continue to work, but new code should always pass the
+ * worksheet-resolved folder.
  */
-export function createResponsePacketAdapter(pluginId: string, vault: Vault): VaultResponsePacketAdapter {
+export function createResponsePacketAdapter(pluginId: string, vault: Vault, folder?: string): VaultResponsePacketAdapter {
   responsePacketHostProfile(pluginId, vault.getName());
-  return new VaultResponsePacketAdapter(createObsidianResponsePacketPort(vault));
+  return new VaultResponsePacketAdapter(createObsidianResponsePacketPort(vault), { folder });
 }
 
 export function createObsidianResponsePacketPort(vault: Vault): ResponsePacketVaultPort {

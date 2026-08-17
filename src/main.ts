@@ -45,7 +45,7 @@ export default class HearthCodeGovernedWidgetsPlugin extends Plugin implements H
   private settings: HccPluginSettings = { ...DEFAULT_HCC_SETTINGS };
   private readonly responsePackets = new ResponsePacketController({
     sessions: this.sessions,
-    adapter: () => createResponsePacketAdapter(this.manifest.id, this.app.vault),
+    adapter: (folder: string) => createResponsePacketAdapter(this.manifest.id, this.app.vault, folder),
     readWorksheetSource: async (sourcePath) => {
       const file = this.app.vault.getAbstractFileByPath(sourcePath);
       if (!(file instanceof TFile)) throw new Error(`HCC-VAULT-SOURCE: worksheet source is unavailable at ${sourcePath}.`);
