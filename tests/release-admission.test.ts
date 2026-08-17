@@ -27,14 +27,14 @@ describe("eight-gate public release admission contract", () => {
     expect(contract.gates.every((gate) => ["pass", "pending", "held"].includes(gate.state))).toBe(true);
   });
 
-  it("admits components, stewardship, and reproducible source while keeping host and external gates open", () => {
+  it("admits seven locally and human-reviewed gates while keeping hosted assurance held", () => {
     expect(contract.gates.filter((gate) => gate.state === "pass").map((gate) => gate.id)).toEqual([
-      "component-admission", "stewardship", "reproducible-public-source"
+      "component-admission", "identity-migration", "stewardship", "host-assurance",
+      "reproducible-public-source", "manual-install", "external-release"
     ]);
-    expect(contract.gates.filter((gate) => gate.state === "pending")).toHaveLength(3);
-    expect(contract.gates.filter((gate) => gate.state === "held").map((gate) => gate.id)).toEqual(["hosted-assurance", "external-release"]);
+    expect(contract.gates.filter((gate) => gate.state === "pending")).toHaveLength(0);
+    expect(contract.gates.filter((gate) => gate.state === "held").map((gate) => gate.id)).toEqual(["hosted-assurance"]);
     expect(contract.gates.every((gate) => gate.state === "pass" || gate.unresolved.length > 0)).toBe(true);
-    expect(contract.gates.find((gate) => gate.id === "reproducible-public-source")).toMatchObject({ state: "pass", unresolved: [] });
   });
 
   it("binds every declared evidence locator to an existing repository file", () => {

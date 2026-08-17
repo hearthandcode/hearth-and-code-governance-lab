@@ -49,6 +49,16 @@ describe("public-source disclosure policy", () => {
     }
   });
 
+  it("admits only the read-only hosted-assurance workflow", () => {
+    expect(policy.excludePaths).not.toContain(".github/workflows");
+    const workflow = readFileSync(resolve(root, ".github/workflows/public-source-assurance.yml"), "utf8");
+    expect(workflow).toContain("contents: read");
+    expect(workflow).toContain("npm run proof");
+    expect(workflow).toContain("npm run proof:public-source");
+    expect(workflow).toContain("npm audit --omit=dev");
+    for (const prohibited of ["contents: write", "actions/upload-artifact", "secrets.", "deployment", "release create"]) expect(workflow).not.toContain(prohibited);
+  });
+
   it("declares no external, Git, release, or publication effect", () => {
     expect(policy.effects).toEqual({ temporaryCopy: true, network: false, git: false, remote: false, release: false, publication: false });
     expect(JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")).scripts["proof:public-source"]).toBe("node scripts/verify-public-source-boundary.mjs");

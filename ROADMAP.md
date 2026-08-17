@@ -36,9 +36,9 @@ Exit requires destination semantic-owner and integration-owner review. The Obsid
 
 ### H3 — Public release admission
 
-- The hardened 0.0.32 projection is the proved baseline for the proposed 0.0.33 final candidate. The final candidate must repeat locked dependency installation, the complete proof, public-boundary verification, and the production dependency audit from a fresh offline clone before host installation or source publication.
-- Complete read-only hosted checks, final-candidate identity and recovery lifecycle evidence, remaining real-host assurance, and the final-candidate manual-install receipt.
-- Obtain separate approval for remote creation, push, GitHub release, and Obsidian Community directory submission.
+- The exact 0.0.33 source and three package assets passed fresh locked reproduction, public-boundary verification, production dependency audit, bounded host review, and the exact public-ID lifecycle.
+- Run and directly observe the admitted read-only hosted-assurance workflow before tagging or releasing.
+- Route A authorizes source publication and the exact GitHub 0.0.33 release. Obsidian Community directory submission remains separately held.
 - Publish only `main.js`, `manifest.json`, and `styles.css` as release assets, with an exact version tag and matching manifest.
 - Keep response packets, private canonical sources, workspace state, credentials, and test-vault state out of the public repository and release.
 

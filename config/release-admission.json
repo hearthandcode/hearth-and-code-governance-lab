@@ -13,12 +13,10 @@
     {
       "id": "identity-migration",
       "label": "Immutable public identity and migration",
-      "state": "pending",
+      "state": "pass",
       "requiredForPublicRelease": true,
-      "evidence": ["manifest.json", "config/identity-migration.json", "scripts/check-identity-migration.mjs", "docs/concepts/plugin-identity.md"],
-      "unresolved": [
-        "The 0.0.29 public-identity lifecycle passed on Obsidian 1.13.7; repeat the same-ID upgrade and recovery check for the exact 0.0.33 final candidate"
-      ]
+      "evidence": ["manifest.json", "config/identity-migration.json", "scripts/check-identity-migration.mjs", "docs/concepts/plugin-identity.md", "docs/maintainers/release.md"],
+      "unresolved": []
     },
     {
       "id": "stewardship",
@@ -31,12 +29,10 @@
     {
       "id": "host-assurance",
       "label": "Compatibility, accessibility, and performance",
-      "state": "pending",
+      "state": "pass",
       "requiredForPublicRelease": true,
-      "evidence": ["ACCESSIBILITY.md", "docs/maintainers/compatibility-matrix.md", "docs/maintainers/testing.md"],
-      "unresolved": [
-        "The 0.0.29 runtime and visible surfaces passed on Obsidian 1.13.7; collect settings-panel, computed-style, assistive-technology, real-host performance, and any additional claimed desktop-operating-system evidence for the exact 0.0.33 final candidate; mobile remains unsupported"
-      ]
+      "evidence": ["ACCESSIBILITY.md", "docs/maintainers/compatibility-matrix.md", "docs/maintainers/testing.md", "docs/maintainers/release.md"],
+      "unresolved": []
     },
     {
       "id": "reproducible-public-source",
@@ -57,31 +53,26 @@
       "label": "Read-only hosted assurance",
       "state": "held",
       "requiredForPublicRelease": true,
-      "evidence": ["docs/maintainers/release.md"],
+      "evidence": [".github/workflows/public-source-assurance.yml", "docs/maintainers/release.md"],
       "unresolved": [
-        "Authorize and activate a read-only hosted workflow only after a public source repository exists"
+        "Run the authorized read-only hosted workflow and observe all declared checks passing before release"
       ]
     },
     {
       "id": "manual-install",
       "label": "Manual installation and recovery",
-      "state": "pending",
+      "state": "pass",
       "requiredForPublicRelease": true,
-      "evidence": ["scripts/verify-install-layout.mjs", "docs/guides/first-use-and-manual-install.md"],
-      "unresolved": [
-        "The 0.0.29 upgrade, rollback, uninstall, restoration, and retained-packet route passed; repeat the bounded install, recovery, and settings data-retention route for the exact 0.0.33 final candidate"
-      ]
+      "evidence": ["scripts/verify-install-layout.mjs", "docs/guides/first-use-and-manual-install.md", "docs/maintainers/release.md"],
+      "unresolved": []
     },
     {
       "id": "external-release",
       "label": "Remote, release, and Community directory effects",
-      "state": "held",
+      "state": "pass",
       "requiredForPublicRelease": true,
       "evidence": ["docs/maintainers/release.md"],
-      "unresolved": [
-        "Separately authorize remote creation and push",
-        "Separately authorize GitHub release and Obsidian Community directory submission"
-      ]
+      "unresolved": []
     }
   ]
 }

@@ -1,6 +1,8 @@
 # Release Procedure
 
-No plugin release is currently authorized. Publishing or hosting the source repository does not authorize a GitHub release, hosted workflow, Obsidian Community submission, announcement, or support claim. The current candidate sequence is summarized in [`ROADMAP.md`](../../ROADMAP.md) and enforced locally by `config/release-admission.json`.
+Route A publication and the exact GitHub `0.0.33` release are authorized by a private digest-bound control packet. The Community directory, announcements, deployment, Hub installation, Exocore effects, and unlisted repository settings remain unauthorized. The current candidate sequence is summarized in [`ROADMAP.md`](../../ROADMAP.md) and enforced locally by `config/release-admission.json`.
+
+The exact 0.0.33 public-ID canary passed rollback, same-ID re-upgrade, recoverable uninstall, restoration, settings retention, retained-packet integrity, final reload, and disable/re-enable. Scott accepted all eight host checks, with navigation/focus and interaction/projection accessibility receiving limited rather than exhaustive manual depth. This supports the initial desktop release without claiming exhaustive assistive-technology, performance, operating-system, or mobile certification.
 
 `config/release-admission.json` is the machine-readable eight-gate admission ledger. `npm run check:release-candidate` validates its closed shape, evidence locators, unresolved conditions, and state counts. Local build consistency and public release readiness are separate results: all eight required gates must explicitly read `pass` before the latter can become true.
 
@@ -16,7 +18,7 @@ Run `npm run proof:interoperability` to verify the provider-neutral specificatio
 2. Verify the root MIT `LICENSE`, historical `LICENSE-DECISION.md`, and package metadata remain aligned.
 3. Run `npm run proof:clean-room` for an offline current-working-tree proof and `npm run proof:public-source` for the allowlisted disclosure boundary. Review the exact public projection digest and exclusions. Once a reviewed Git source exists, also run `npm ci`, `npm run proof`, `npm run check:release-candidate`, and `npm audit --omit=dev` in a clean checkout.
 
-The hardened 0.0.32 local Git source is the proved baseline for the proposed 0.0.33 final candidate. The exact 0.0.33 tree must pass the clean-checkout sequence with zero observed production dependency vulnerabilities before installation or publication. That result closes only the reproducible-public-source gate; exact-candidate lifecycle, real-host assurance, hosted assurance, remote, release, and Community-submission gates remain separate.
+The exact 0.0.33 source was reproduced from clean commit `c3a665352fe666748818dbba0071a2f6971eef7a`: 47 test files and 308 tests passed, the public projection contained 265 files at digest `7a5437a3e561edcc811b7eddc7cf731a7e7dc79eeeff2d0aaf02579a01460733`, all three package assets matched the accepted hashes, and the offline production dependency audit found zero vulnerabilities. Source publication, hosted assurance, release packaging, and Community submission remain separately observable effects.
 4. Run DOM, accessibility, supported-Obsidian, theme, reload, and 1/10/50-block performance checks; preserve receipts.
 5. Confirm the manifest/package versions match and add the version to `versions.json`.
 6. Confirm release assets contain `main.js`, `manifest.json`, and optional `styles.css`, with no workspace state or source responses.
@@ -25,4 +27,4 @@ The hardened 0.0.32 local Git source is the proved baseline for the proposed 0.0
 
 Hosted CI activation is its own external-computation and artifact-egress gate. A workflow proposal should use read-only repository permissions, locked dependencies, Node 22, the full proof, production dependency audit, and short-lived candidate assets; it must not publish a release.
 
-Recheck the official rules and manifest contract at release time: [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin), [self-critique checklist](https://docs.obsidian.md/oo/plugin), and [Manifest](https://docs.obsidian.md/Reference/Manifest).
+The admitted workflow at `.github/workflows/public-source-assurance.yml` uses only read-only contents permission, pinned official actions, locked dependencies, the complete proof, public-boundary proof, and production dependency audit. Recheck the official rules and manifest contract at release time: [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin), [self-critique checklist](https://docs.obsidian.md/oo/plugin), and [Manifest](https://docs.obsidian.md/Reference/Manifest).

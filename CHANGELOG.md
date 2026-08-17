@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- Materialized the accepted public projection as a clean local Git source and proved the committed 0.0.32 tree from a fresh offline clone with locked dependency installation, the complete test/build/install/smoke suite, and a zero-finding production dependency audit. The reproducible-source gate now passes while exact-candidate lifecycle, host, hosted, remote, release, and Community-submission gates remain open.
+- Published the exact 0.0.33 source after fresh locked reproduction, 47-file/308-test proof, public-boundary verification, and a zero-finding production dependency audit.
+- Completed the exact public-ID rollback, re-upgrade, recoverable uninstall, restoration, settings-retention, and retained-packet lifecycle while preserving the bounded limits of the accepted host review.
+- Added a pinned, read-only hosted-assurance workflow. GitHub release packaging remains held until that workflow passes; Community submission remains separately unauthorized.
 
 ## 0.0.32 - 2026-08-14
 

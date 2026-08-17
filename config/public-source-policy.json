@@ -52,7 +52,6 @@
     "tests"
   ],
   "excludePaths": [
-    ".github/workflows",
     "scratch-vault/.obsidian",
     "scratch-vault/.trash",
     "scratch-vault/Intake",
