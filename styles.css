@@ -451,21 +451,27 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 }
 
 .hcc-widget__option input:is([type="radio"], [type="checkbox"]) {
-  /* Custom-drawn checkbox/radio using the matrix-choice pattern. Without
-     `appearance: none`, the browser's native checkbox styling takes over
-     on hover and the visual flickers between hover and non-hover states.
-     With this rule, the visual is consistent whether the mouse is over
-     the input or away. */
+  /* Custom-drawn checkbox/radio using the matrix-choice pattern.
+     -webkit-appearance: none is set alongside the standard property
+     because some Chromium Electron builds only honor the prefixed form
+     for form controls.
+     display: inline-block + position: relative sidesteps the
+     blockification that `display: grid` suffers on a flex child (the
+     option-list label is `display: flex`). The `::before` then centers
+     itself via absolute positioning without relying on `place-content`.
+     Border uses --hcc-text-muted (matches matrix-choice) to ensure
+     WCAG 1.4.11 3:1 contrast against --hcc-surface in ember-circuit. */
+  -webkit-appearance: none;
   appearance: none;
   background: var(--hcc-surface);
-  border: 2px solid var(--hcc-border);
-  display: grid;
+  border: 2px solid var(--hcc-text-muted);
+  display: inline-block;
   flex: 0 0 auto;
   height: 1.3rem;
   margin: 0;
   min-height: 1.3rem;
   min-width: 1.3rem;
-  place-content: center;
+  position: relative;
   width: 1.3rem;
 }
 
@@ -478,12 +484,17 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 }
 
 /* The checkmark (or the radio dot) is drawn by a pseudo-element that
-   scales up from 0 on :checked. Same approach as the matrix-choice
-   inputs so the visual is consistent across the workbook. */
+   scales up from 0 on :checked. Absolute positioning + inset:0 + margin:auto
+   centers it regardless of the input's display type (works on blockified
+   flex children where `place-content: center` does not apply). */
 .hcc-widget__option input:is([type="radio"], [type="checkbox"])::before {
   background: var(--hcc-accent-bright);
   content: "";
   height: 0.65rem;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+  position: absolute;
   transform: scale(0);
   transition: transform 0.15s ease;
   width: 0.65rem;
@@ -520,6 +531,31 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 .hcc-widget__option input:is([type="radio"], [type="checkbox"]):checked::before {
   background: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
   transform: scale(1);
+}
+
+/* Forced-colors (Windows High Contrast, etc.) override. The matrix-choice
+   input already has this block; the option-list and packet-confirm inputs
+   did not, which made them illegible in HCM. Matches the matrix-choice
+   pattern: native appearance, system-color borders, Highlight outline,
+   and a Unicode checkmark instead of the clip-path ::before. */
+@media (forced-colors: active) {
+  .hcc-widget__option input:is([type="radio"], [type="checkbox"]) {
+    -webkit-appearance: auto;
+    appearance: auto;
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+    outline: 3px solid Highlight;
+    outline-offset: -3px;
+  }
+  .hcc-widget__option input:is([type="radio"], [type="checkbox"])::before {
+    background: Highlight;
+  }
+  .hcc-widget__option input:is([type="radio"], [type="checkbox"]):checked::before {
+    background: none;
+    content: "✓";
+    transform: none;
+  }
 }
 
 :is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option {
@@ -1260,23 +1296,24 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 
 .hcc-workbook__packet-confirm input[type="checkbox"],
 .hcc-workbook__packet-import-discard input[type="checkbox"] {
-  /* Same custom-drawn pattern as the option-list inputs: appearance: none
-     prevents the browser's default hover flicker, a real border is set on
-     the base, and the checkmark is drawn by a ::before pseudo-element
-     that scales up on :checked. The import-discard checkbox needs the
-     same base rule as the packet-confirm checkbox, otherwise the browser
-     default styling takes over on hover and the visual flickers. */
+  /* Same custom-drawn pattern as the option-list inputs. The vendor-prefixed
+     -webkit-appearance: none guards against Chromium Electron builds that
+     only honor the prefixed form. display: inline-block + position: relative
+     sidesteps the blockification that `display: grid` suffers on a flex
+     child (the packet-confirm / import-discard labels are `display: flex`).
+     Border uses --hcc-text-muted for WCAG 1.4.11 3:1 contrast. */
+  -webkit-appearance: none;
   appearance: none;
   background: var(--hcc-surface);
-  border: 2px solid var(--hcc-border);
+  border: 2px solid var(--hcc-text-muted);
   border-radius: calc(var(--hcc-radius) - 3px);
-  display: grid;
+  display: inline-block;
   flex: 0 0 auto;
   height: 1.25rem;
   margin: 0;
   min-height: 1.25rem;
   min-width: 1.25rem;
-  place-content: center;
+  position: relative;
   width: 1.25rem;
 }
 
@@ -1286,6 +1323,10 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 19%, 84% 4%, 39% 69%);
   content: "";
   height: 0.6rem;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+  position: absolute;
   transform: scale(0);
   transition: transform 0.15s ease;
   width: 0.6rem;
@@ -1306,6 +1347,30 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 .hcc-workbook__packet-import-discard input[type="checkbox"]:checked::before {
   background: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
   transform: scale(1);
+}
+
+/* Forced-colors override (matches the option-list and matrix-choice blocks). */
+@media (forced-colors: active) {
+  .hcc-workbook__packet-confirm input[type="checkbox"],
+  .hcc-workbook__packet-import-discard input[type="checkbox"] {
+    -webkit-appearance: auto;
+    appearance: auto;
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+    outline: 3px solid Highlight;
+    outline-offset: -3px;
+  }
+  .hcc-workbook__packet-confirm input[type="checkbox"]::before,
+  .hcc-workbook__packet-import-discard input[type="checkbox"]::before {
+    background: Highlight;
+  }
+  .hcc-workbook__packet-confirm input[type="checkbox"]:checked::before,
+  .hcc-workbook__packet-import-discard input[type="checkbox"]:checked::before {
+    background: none;
+    content: "✓";
+    transform: none;
+  }
 }
 
 /* Import-from-YAML area for Fix 5 (round-trip preserve answers). */
