@@ -522,7 +522,20 @@ function renderResponsePacketPanel(
         return;
       }
       const result = await actions.importDraft(yaml, { discard: importDiscardCheckbox?.checked === true });
-      releaseStatus.textContent = `Imported ${result.imported} answer${result.imported === 1 ? "" : "s"} from session ${result.sessionId || "<unknown>"}${result.discarded ? " (discarded the previous draft)." : "."}`;
+      // The response set just changed, so every cached fingerprint is stale.
+      // Reset the review/finalize/preview state and force the user to re-review
+      // and re-finalize before they can preview a new packet. Without this,
+      // finalize.disabled stays true because reviewedFingerprint no longer
+      // matches release.fingerprint(), and the user is stuck.
+      reviewedFingerprint = null;
+      finalizedFingerprint = null;
+      preparedFinalFingerprint = null;
+      initialPreview = null;
+      amendmentPreview = null;
+      confirmation.checked = false;
+      confirmationStatus.textContent = "Imported draft cleared the cached review state. Click Review worksheet, then Mark answers finalized.";
+      releaseStatus.textContent = `Imported ${result.imported} answer${result.imported === 1 ? "" : "s"} from session ${result.sessionId || "<unknown>"}${result.discarded ? " (discarded the previous draft)." : "."} Review and finalize before creating a packet.`;
+      syncButtonStates();
       syncStages();
     }));
     const cancelImport = button("Cancel import", () => {
