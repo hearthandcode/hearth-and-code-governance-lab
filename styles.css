@@ -466,15 +466,22 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
  * below overrides these with its own background mix and inset ring.
  */
 .hcc-widget__option:has(input:is([type="radio"], [type="checkbox"]):checked) {
-  border-color: var(--hcc-accent);
-  background: color-mix(in srgb, var(--hcc-surface) 85%, var(--hcc-accent) 15%);
+  /* Electric-circuit fallback chain: forge violet (Hearth+Code warm/cool fusion)
+     for the ember-circuit theme, then forge cyan, then the generic accent. */
+  border-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
+  background: color-mix(in srgb, var(--hcc-surface) 80%, var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent))) 20%);
 }
 
 .hcc-widget__option input:is([type="radio"], [type="checkbox"]):checked {
-  accent-color: var(--hcc-accent-bright);
-  border-color: var(--hcc-accent-bright);
-  box-shadow: inset 0 0 0 2px var(--hcc-accent-bright);
-}
+  /* Strong visual signal on the control itself: accent-color tint inside,
+     a matching border, and an outer glow ring. Same pattern as the
+     matrix-choice inputs, but using the electric-circuit color chain
+     so the forge aesthetic carries through to dense option lists. */
+  accent-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  border-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  box-shadow:
+    inset 0 0 0 2px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright))),
+    0 0 0 4px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
 
 :is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option {
   background: var(--hcc-surface-raised);
@@ -1199,6 +1206,17 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   flex: 0 0 auto;
   min-height: 1.25rem;
   min-width: 1.25rem;
+}
+
+/* Visible :checked state for the per-write confirmation and import-discard
+   checkboxes. Same electric-circuit fallback chain as the option-list inputs. */
+.hcc-workbook__packet-confirm input[type="checkbox"]:checked,
+.hcc-workbook__packet-import-discard input[type="checkbox"]:checked {
+  accent-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  border-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  box-shadow:
+    inset 0 0 0 2px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright))),
+    0 0 0 4px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
 }
 
 /* Import-from-YAML area for Fix 5 (round-trip preserve answers). */
