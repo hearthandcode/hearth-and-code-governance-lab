@@ -104,6 +104,54 @@ describe("response-packet orchestration controller", () => {
     }
   });
 
+  it("honors worksheet.target_folder_override for both preview and create", async () => {
+    // Fix 2 regression: the per-workspace target_folder_override field on the
+    // hcc-form block must flow through buildWritePolicy into plan.targetPath
+    // so immutable packets land under the project-local folder instead of
+    // the default Intake/HCC Responses literal.
+    const overrideFolder = "04-workspace--scriptorium/projects/ember-circuit-brand-system/intake/_responses";
+    const worksheetWithOverride: WorksheetContract = {
+      ...worksheet,
+      target_folder_override: overrideFolder
+    };
+    const port = new MemoryPacketPort();
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    answer(sessions, "Override-path answer");
+    const responsePackets = controller(sessions, port).controller;
+
+    const preview = await responsePackets.saveInitial(sourcePath, worksheetWithOverride, false);
+    expect(preview.path.startsWith(`${overrideFolder}/`)).toBe(true);
+    expect(preview.path).not.toContain("Intake/HCC Responses");
+
+    const created = await responsePackets.saveInitial(sourcePath, worksheetWithOverride, true, preview);
+    expect(created.path.startsWith(`${overrideFolder}/`)).toBe(true);
+    expect(created.path).not.toContain("Intake/HCC Responses");
+    expect(port.files.has(created.path)).toBe(true);
+    expect(port.files.has(`Intake/HCC Responses/${created.path.split("/").pop()}`)).toBe(false);
+
+    // Note: a reload assertion is omitted here because the in-memory
+    // session fixture retains the answered draft, and load() calls
+    // EphemeralWorkbookSessions.hydrate() which rejects non-empty drafts.
+    // The packet-locator side (which uses resolveResponsePacketFolder
+    // on the adapter) is covered separately in tests/packet-locator.test.ts.
+  });
+
+  it("falls back to default Intake/HCC Responses when target_folder_override is absent", async () => {
+    // Backward-compatibility regression: worksheets without target_folder_override
+    // keep using the legacy literal. This protects existing callers and
+    // existing response-packet paths that already live under Intake/HCC Responses.
+    const port = new MemoryPacketPort();
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    answer(sessions, "Default-folder answer");
+    const responsePackets = controller(sessions, port).controller;
+
+    const preview = await responsePackets.saveInitial(sourcePath, worksheet, false);
+    expect(preview.path.startsWith("Intake/HCC Responses/")).toBe(true);
+
+    const created = await responsePackets.saveInitial(sourcePath, worksheet, true, preview);
+    expect(created.path.startsWith("Intake/HCC Responses/")).toBe(true);
+  });
+
   it("blocks changed responses and cleared pending plans before any create effect", async () => {
     const port = new MemoryPacketPort();
     const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));

@@ -18,6 +18,13 @@ export interface WorksheetContract {
   sections: WorksheetSection[];
   completion: { required: string[] };
   workbook_ref?: string;
+  /**
+   * Per-workspace response-packet folder override. When present, immutable
+   * response packets created from this worksheet land under this folder
+   * instead of the default Intake/HCC Responses/ literal. Validated against
+   * the same shape rule as workbook_ref.
+   */
+  target_folder_override?: string;
   governance: {
     authority_refs: string[];
     review_required: boolean;

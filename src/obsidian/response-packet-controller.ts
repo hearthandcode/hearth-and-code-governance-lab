@@ -54,7 +54,7 @@ export class ResponsePacketController {
     }
     const sourceDigest = await this.currentWorksheetDigest(sourcePath);
     const packet = this.options.sessions.finalProposal(sourcePath, worksheet, { sourceDigest, persistence: "vault-local-create-only" });
-    const plan = await compileResponseWritePlan(dump(packet, { lineWidth: -1, noRefs: true }), RESPONSE_WRITE_POLICY, {
+    const plan = await compileResponseWritePlan(dump(packet, { lineWidth: -1, noRefs: true }), buildWritePolicy(worksheet), {
       worksheetId: worksheet.id, sourcePath, sourceDigest, privacy: worksheet.privacy
     }, webCryptoSha256);
     if (!plan.ok) throw writerFailure(plan.diagnostics);
@@ -189,3 +189,25 @@ allowed_privacy: [private, restricted, internal, public]
 human_gate: per-write
 canonical_apply: prohibited
 `;
+
+/**
+ * Build the write policy for a given worksheet. When the worksheet declares
+ * a `target_folder_override` in its hcc-form block, substitute it into the
+ * policy's `target_folder:` line so immutable response packets land under
+ * the project-local folder instead of the default Intake/HCC Responses/.
+ *
+ * The override value has already been shape-validated by parseWorksheet
+ * (via optionalPath); this function performs an additional fail-closed
+ * length check and then a literal substitution into the template.
+ */
+function buildWritePolicy(worksheet: WorksheetContract): string {
+  const override = worksheet.target_folder_override;
+  if (typeof override !== "string" || override.length === 0) return RESPONSE_WRITE_POLICY;
+  // Fail-closed: refuse any override containing characters that could break
+  // the YAML policy literal. parseWorksheet's optionalPath already rejects
+  // these, but a belt-and-braces check guards against future parser drift.
+  if (/[\n\r"'\\:#]/.test(override)) {
+    throw new Error(`HCC-WRITER-POLICY: target_folder_override ${override} contains a YAML-unsafe character; refusing to substitute.`);
+  }
+  return RESPONSE_WRITE_POLICY.replace(/^target_folder: .*$/m, `target_folder: ${override}`);
+}

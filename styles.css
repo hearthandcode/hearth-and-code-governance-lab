@@ -458,6 +458,22 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   width: 1.3rem;
 }
 
+/*
+ * Checked-state visual feedback for option-list radios and checkboxes.
+ * Without this rule, the input's checked state is invisible outside the
+ * ember-circuit theme scope: the browser default checkmark on the input
+ * alone is too subtle in dense option lists. The ember-circuit theme
+ * below overrides these with its own background mix and inset ring.
+ */
+.hcc-widget__option:has(input:is([type="radio"], [type="checkbox"]):checked) {
+  border-color: var(--hcc-accent);
+  background: color-mix(in srgb, var(--hcc-surface) 85%, var(--hcc-accent) 15%);
+}
+
+.hcc-widget__option input:is([type="radio"], [type="checkbox"]):checked {
+  accent-color: var(--hcc-accent-bright);
+}
+
 :is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option {
   background: var(--hcc-surface-raised);
   border-color: var(--hcc-border-strong);

@@ -13,7 +13,7 @@ import {
   type WorksheetSection
 } from "./types";
 
-const WORKSHEET_FIELDS = new Set(["version", "id", "title", "purpose", "privacy", "sections", "completion", "workbook_ref", "governance"]);
+const WORKSHEET_FIELDS = new Set(["version", "id", "title", "purpose", "privacy", "sections", "completion", "workbook_ref", "target_folder_override", "governance"]);
 const WORKBOOK_FIELDS = new Set(["version", "id", "title", "purpose", "worksheets", "navigation", "governance"]);
 const MAX_SECTIONS = 16;
 const MAX_INTERACTIONS = 64;
@@ -33,12 +33,15 @@ export function parseWorksheet(source: string): WorksheetParseResult {
   const sections = sectionList(value.sections, diagnostics);
   const completion = completionValue(value.completion, sections, diagnostics);
   const workbookRef = optionalPath(value.workbook_ref, "$.workbook_ref", diagnostics);
+  const targetFolderOverride = optionalPath(value.target_folder_override, "$.target_folder_override", diagnostics);
   const governance = worksheetGovernance(value.governance, diagnostics);
   if (diagnostics.length || !id || !title || !purpose || !privacy || !sections || !completion || !governance) return { ok: false, diagnostics };
-  return { ok: true, diagnostics: [], worksheet: {
-    version: WORKSHEET_VERSION, id, title, purpose, privacy, sections, completion, governance,
-    ...(workbookRef === undefined ? {} : { workbook_ref: workbookRef })
-  } };
+  const worksheet: WorksheetContract = {
+    version: WORKSHEET_VERSION, id, title, purpose, privacy, sections, completion, governance
+  };
+  if (workbookRef !== undefined) worksheet.workbook_ref = workbookRef;
+  if (targetFolderOverride !== undefined) worksheet.target_folder_override = targetFolderOverride;
+  return { ok: true, diagnostics: [], worksheet };
 }
 
 export function parseWorkbook(source: string): WorkbookParseResult {
