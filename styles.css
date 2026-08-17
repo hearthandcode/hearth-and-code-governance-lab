@@ -1258,11 +1258,14 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   gap: 0.55rem;
 }
 
-.hcc-workbook__packet-confirm input[type="checkbox"] {
+.hcc-workbook__packet-confirm input[type="checkbox"],
+.hcc-workbook__packet-import-discard input[type="checkbox"] {
   /* Same custom-drawn pattern as the option-list inputs: appearance: none
      prevents the browser's default hover flicker, a real border is set on
      the base, and the checkmark is drawn by a ::before pseudo-element
-     that scales up on :checked. */
+     that scales up on :checked. The import-discard checkbox needs the
+     same base rule as the packet-confirm checkbox, otherwise the browser
+     default styling takes over on hover and the visual flickers. */
   appearance: none;
   background: var(--hcc-surface);
   border: 2px solid var(--hcc-border);
