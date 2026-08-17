@@ -522,19 +522,22 @@ function renderResponsePacketPanel(
         return;
       }
       const result = await actions.importDraft(yaml, { discard: importDiscardCheckbox?.checked === true });
-      // The response set just changed, so every cached fingerprint is stale.
-      // Reset the review/finalize/preview state and force the user to re-review
-      // and re-finalize before they can preview a new packet. Without this,
-      // finalize.disabled stays true because reviewedFingerprint no longer
-      // matches release.fingerprint(), and the user is stuck.
-      reviewedFingerprint = null;
+      // The response set just changed, so the cached preview state is
+      // stale. Auto-set the reviewed fingerprint to the current
+      // release fingerprint so the user can immediately click
+      // "Mark answers finalized" and proceed to preview. The user
+      // has explicitly chosen to import these answers, so treating
+      // them as reviewed is the right default. The finalize step
+      // still requires an explicit click because finalizedFingerprint
+      // stays null until the user clicks the button.
+      reviewedFingerprint = release.fingerprint();
       finalizedFingerprint = null;
       preparedFinalFingerprint = null;
       initialPreview = null;
       amendmentPreview = null;
       confirmation.checked = false;
-      confirmationStatus.textContent = "Imported draft cleared the cached review state. Click Review worksheet, then Mark answers finalized.";
-      releaseStatus.textContent = `Imported ${result.imported} answer${result.imported === 1 ? "" : "s"} from session ${result.sessionId || "<unknown>"}${result.discarded ? " (discarded the previous draft)." : "."} Review and finalize before creating a packet.`;
+      confirmationStatus.textContent = "Imported draft ready. Click Mark answers finalized to continue.";
+      releaseStatus.textContent = `Imported ${result.imported} answer${result.imported === 1 ? "" : "s"} from session ${result.sessionId || "<unknown>"}${result.discarded ? " (discarded the previous draft)." : "."}`;
       syncButtonStates();
       syncStages();
     }));
