@@ -2,14 +2,23 @@
 
 ## Unreleased
 
-<<<<<<< HEAD
-- Published the exact 0.0.33 source after fresh locked reproduction, 47-file/308-test proof, public-boundary verification, and a zero-finding production dependency audit.
-- Completed the exact public-ID rollback, re-upgrade, recoverable uninstall, restoration, settings-retention, and retained-packet lifecycle while preserving the bounded limits of the accepted host review.
-- Added a pinned, read-only hosted-assurance workflow. GitHub release packaging remains held until that workflow passes; Community submission remains separately unauthorized.
-||||||| parent of bc28f71 (feat(writer): per-workspace target_folder_override (0.0.34 candidate))
-- Materialized the accepted public projection as a clean local Git source and proved the committed 0.0.32 tree from a fresh offline clone with locked dependency installation, the complete test/build/install/smoke suite, and a zero-finding production dependency audit. The reproducible-source gate now passes while exact-candidate lifecycle, host, hosted, remote, release, and Community-submission gates remain open.
-=======
-- 0.0.34 candidate under integration-owner preparation; see the 0.0.34 entry below.
+## 0.0.35 - 2026-08-17
+
+Reconciled and integrated release: the 0.0.34 candidate work (per-workspace `target_folder_override`, grammar reference docs, ranked_choice authoring clarification, GW-R10 + GW-R11 grammar subsections, regression tests) plus the 0.0.33 release-prep work that had been staged on `agent/hosted-assurance-0.0.33` (release-admission ledger updates, public-source policy update, read-only hosted-assurance workflow, release-procedure doc updates) are folded into one authoritative release on `release/0.0.35`. No behavior changes from 0.0.34; the additions document and lock in rules the parser already enforced and close the remaining release-admission gates.
+
+- **Per-workspace `target_folder_override`** (carried from 0.0.34): admits any project-home-relative response-packet folder satisfying the existing safePath shape rule; preserved the legacy literal `Intake/HCC Responses/` as `RESPONSE_PACKET_DEFAULT_FOLDER` and as a deprecated alias for one release. Threaded the configured folder through the response-packet adapter constructor, exposed `resolveResponsePacketFolder(worksheetFolder)` plus a `ResponsePacketFolderConfig` source descriptor, and updated the worksheet packet locator to honor `configuredFolder`. The capability descriptor in the plugin capability catalog reports "configured response-packet folder" instead of the historical literal; every prohibited-effect declaration and the exact two-profile host-policy boundary is preserved. The `operate-hcc-responses` SKILL doc was refreshed to describe the worksheet-level override and the adapter-level folder option alongside the legacy default path; exact-path, digest-verified-readback, no-overwrite/no-rename/no-append/no-delete write policy holds under either folder.
+- **Grammar reference documentation** (carried from 0.0.34): added the per-kind configuration schema table (one row per input kind with the accepted config keys) and the Label quoting subsection showing the WRONG/RIGHT pattern for inline option labels with embedded commas (`{ id: foo, label: 'Foo, bar' }`).
+- **`ranked_choice` authoring clarification** (carried from 0.0.34): the authoring guide now states explicitly that `ranked_choice` accepts only `options` under `config`; `min_selections` / `max_selections` belong to `multi_select` and are rejected on `ranked_choice` blocks with `HCC-GRAMMAR-UNKNOWN-001`.
+- **GW-R10 — Mandatory `prompt:` on every interaction**: a new `docs/reference/grammar.md` subsection documents that every `hcc-interaction` block (including `file_reference`, `repeatable_group`, and other kinds) must declare `prompt:` with a non-empty value. Missing or empty `prompt:` is rejected with `HCC-GRAMMAR-SCHEMA-001 at $.prompt`.
+- **GW-R11 — Block-scalar indentation**: a new `docs/reference/grammar.md` subsection documents that every continuation line of a YAML block scalar (`key: |`) must carry the same indent as the first content line. Un-indented continuations parse as sibling keys and the parser rejects them as `a multiline key may not be an implicit key` (the plugin surfaces this as `HCC-WORKBOOK-PARSE` for `hcc-form` and `HCC-PARSE-001` for `hcc-interaction`); a `block_scalar(key, text, indent)` helper in the companion `hcc-worksheet-authoring` skill indents every line uniformly.
+- **Regression tests** in a new `grammar rule regression — Ember Circuit 0.0.34 intake` describe block in `tests/grammar-expansion.test.ts`: seven negative-case assertions that lock in the rejection behavior for the Ember Circuit bug classes (ranked_choice with min/max_selections, long_text with columns, matrix column missing label, file_reference empty extensions, file_reference missing prompt, multi_select max exceeding option count, repeatable_group field missing kind). The total test count rises from 315 to 322.
+- **Read-only hosted-assurance workflow** (`github/workflows/public-source-assurance.yml`, carried from the 0.0.33 release prep): pinned actions, locked dependencies, the full proof, public-boundary proof, and production dependency audit; `contents: read` permission only. The negative-assurance test (`tests/release-admission.test.ts`) explicitly asserts the workflow does not contain `contents: write`, `actions/upload-artifact`, `secrets.`, `deployment`, or `release create` patterns.
+- **Release admission ledger** (`config/release-admission.json`): five gates advanced from `pending` to `pass` (identity-migration, host-assurance, manual-install, plus the existing pass gates; external-release remains `held` separately). `hosted-assurance` remains `held` until the new workflow has been observed passing on a real repository. Eight-gate ledger shape unchanged.
+- **Public source policy** (`config/public-source-policy.json`): removed `.github/workflows` from `excludePaths` so the workflow can live in the public repo; every other boundary (scratch-vault, Intake/, response-packet paths, sensitive Hub content) is preserved.
+- **Release procedure documentation** (`docs/maintainers/release.md`): updated Route A narrative and reproduce recipe to record the 0.0.33-source reproduction (47 test files, 308 tests, 265-file public projection at digest `7a5437a3e561edcc811b7eddc7cf731a7e7dc79eeeff2d0aaf02579a01460733`, three matching package assets, zero production dependency vulnerabilities). Hosted CI paragraph updated to describe the new workflow.
+- **Version bumped** to `0.0.35` across `package.json`, `manifest.json`, and `versions.json`; Obsidian minimum version remains `1.13.4` (same as 0.0.33 and 0.0.34).
+
+No behavior changes from 0.0.34. Verified locally: `npm run check` clean; `npm run test` 47 files, 322 tests, all PASS; `npm run proof` exit 0.
 
 ## 0.0.34 - 2026-08-16
 
@@ -21,7 +30,6 @@
 - Refreshed the SKILL documentation for the `operate-hcc-responses` skill so the human-facing operation guide describes the worksheet-level override and the adapter-level folder option alongside the legacy default path; preserved the exact-path, digest-verified-readback, no-overwrite/no-rename/no-append/no-delete write policy under either folder.
 - Confirmed the local-folder change on a per-workspace emulator by passing and reading packets at the configured folder, rejecting traversal-shaped configured folders with a fresh `HCC-VAULT-CFG` diagnostic, and verifying that the legacy Intake/HCC Responses prefix continues to validate when no override is configured.
 - Bumped the public plugin version to 0.0.34 across `package.json` and `manifest.json`; retained the GitHub release-packaging hold and the Community submission hold from the preceding release flow until Scott completes the integration-owner steps.
->>>>>>> bc28f71 (feat(writer): per-workspace target_folder_override (0.0.34 candidate))
 
 ## 0.0.32 - 2026-08-14
 

@@ -1,7 +1,7 @@
 {
   "id": "hearth-and-code-governance-lab",
   "name": "Hearth and Code Governance Lab",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "minAppVersion": "1.13.4",
   "description": "Render governed HCC interactions, workbooks, projections, schema/workflow designs, and immutable vault-local response packets.",
   "author": "Scott Rallya",
