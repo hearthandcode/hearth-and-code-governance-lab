@@ -482,6 +482,7 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   box-shadow:
     inset 0 0 0 2px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright))),
     0 0 0 4px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+}
 
 :is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option {
   background: var(--hcc-surface-raised);
@@ -528,7 +529,16 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   align-items: center;
   display: grid;
   gap: 0.4rem;
+  /* Option column flexes, then a clear separator gap (column-gap)
+     separates the option from the up/down button pair. The ± button
+     pair inside the third column keeps its own internal gap. */
+  column-gap: 0.75rem;
   grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.hcc-widget__ranking-item__buttons {
+  display: inline-flex;
+  gap: 0.3rem;
 }
 
 .hcc-widget__ranking-item[draggable="true"] {
@@ -539,12 +549,20 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   cursor: grabbing;
 }
 
+/* Drop-target highlight: the row where the dragged candidate would land
+   shows a thick, electric-circuit accent edge. Before = top edge,
+   After = bottom edge. Using the --hcc-signal-violet/cyan chain so the
+   forge aesthetic applies to the drop indicator as well. */
 .hcc-widget__ranking-item[data-insertion-edge="before"] {
-  border-block-start: 0.25rem solid var(--hcc-accent);
+  border-block-start: 0.4rem solid var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
+  box-shadow: inset 0 0.4rem 0 0 var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
+  padding-block-start: 0.4rem;
 }
 
 .hcc-widget__ranking-item[data-insertion-edge="after"] {
-  border-block-end: 0.25rem solid var(--hcc-accent);
+  border-block-end: 0.4rem solid var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
+  box-shadow: inset 0 -0.4rem 0 0 var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
+  padding-block-end: 0.4rem;
 }
 
 .hcc-widget__ranking-item[data-insertion-edge]::before {
