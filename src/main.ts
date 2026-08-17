@@ -353,9 +353,24 @@ export default class HearthCodeGovernedWidgetsPlugin extends Plugin implements H
       responsePackets: {
         saveInitial: (confirmed, expected) => this.saveInitialResponsePacket(sourcePath, result.worksheet, confirmed, expected),
         load: (path, digest) => this.loadResponsePacket(sourcePath, result.worksheet, path, digest),
-        saveAmendment: (predecessor, reason, confirmed, expected) => this.saveResponseAmendment(sourcePath, result.worksheet, predecessor, reason, confirmed, expected)
+        saveAmendment: (predecessor, reason, confirmed, expected) => this.saveResponseAmendment(sourcePath, result.worksheet, predecessor, reason, confirmed, expected),
+        exportDraft: () => this.exportDraftAsYaml(sourcePath, result.worksheet),
+        importDraft: (yaml, options) => this.importDraftFromYaml(sourcePath, result.worksheet, yaml, options)
       }
     });
+  }
+
+  private exportDraftAsYaml(sourcePath: string, worksheet: WorksheetContract): string {
+    return this.responsePackets.exportDraftAsYaml(sourcePath, worksheet);
+  }
+
+  private async importDraftFromYaml(
+    sourcePath: string,
+    worksheet: WorksheetContract,
+    yaml: string,
+    options: { discard?: boolean } = {}
+  ): Promise<{ imported: number; discarded: boolean; sessionId: string }> {
+    return this.responsePackets.importDraftFromYaml(sourcePath, worksheet, yaml, options);
   }
 
   private async saveInitialResponsePacket(

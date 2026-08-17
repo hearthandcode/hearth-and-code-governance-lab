@@ -166,4 +166,82 @@ describe("response-packet orchestration controller", () => {
     await expect(responsePackets.saveInitial(sourcePath, worksheet, true, freshPreview)).rejects.toThrow("absent or stale");
     expect(port.files.size).toBe(0);
   });
+
+  it("Fix 5: exportDraftAsYaml + importDraftFromYaml round-trip preserves every response", () => {
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    answer(sessions, "Round-trip value");
+    const responsePackets = controller(sessions, new MemoryPacketPort()).controller;
+
+    const yaml = responsePackets.exportDraftAsYaml(sourcePath, worksheet);
+    expect(yaml).toContain("record_type: hcc-worksheet-session-draft");
+    expect(yaml).toContain("worksheet_id: controller-proof");
+
+    // Fresh session: import the YAML; the in-memory draft must be restored.
+    const freshSessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T22:00:00.000Z"));
+    const freshController = controller(freshSessions, new MemoryPacketPort()).controller;
+    const result = freshController.importDraftFromYaml(sourcePath, worksheet, yaml);
+    expect(result.imported).toBe(1);
+    expect(result.discarded).toBe(false);
+    expect(result.sessionId.length).toBeGreaterThan(0);
+
+    // After import, the draft proposals are equal.
+    const before = sessions.draftProposal(sourcePath, worksheet);
+    const after = freshSessions.draftProposal(sourcePath, worksheet);
+    expect(after.responses).toEqual(before.responses);
+  });
+
+  it("Fix 5: import rejects when the YAML's worksheet_id does not match the current worksheet", () => {
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    answer(sessions, "value");
+    const responsePackets = controller(sessions, new MemoryPacketPort()).controller;
+    const yaml = responsePackets.exportDraftAsYaml(sourcePath, worksheet);
+
+    const otherWorksheet: WorksheetContract = { ...worksheet, id: "other-worksheet" };
+    const fresh = new EphemeralWorkbookSessions(() => new Date("2026-08-11T22:00:00.000Z"));
+    const freshController = controller(fresh, new MemoryPacketPort()).controller;
+    expect(() => freshController.importDraftFromYaml(sourcePath, otherWorksheet, yaml)).toThrow(/HCC-IMPORT-WORKSHEET/);
+  });
+
+  it("Fix 5: import rejects when an interaction_id is not declared in the current worksheet", () => {
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    answer(sessions, "value");
+    const responsePackets = controller(sessions, new MemoryPacketPort()).controller;
+    const yaml = responsePackets.exportDraftAsYaml(sourcePath, worksheet);
+
+    // Build a worksheet that does NOT declare the 'answer' interaction.
+    const slimWorksheet: WorksheetContract = {
+      ...worksheet,
+      sections: [{ id: "review", title: "Review", interactions: [] }],
+      completion: { required: [] }
+    };
+    const fresh = new EphemeralWorkbookSessions(() => new Date("2026-08-11T22:00:00.000Z"));
+    const freshController = controller(fresh, new MemoryPacketPort()).controller;
+    expect(() => freshController.importDraftFromYaml(sourcePath, slimWorksheet, yaml)).toThrow(/HCC-IMPORT-SCOPE/);
+  });
+
+  it("Fix 5: import rejects malformed YAML, wrong record_type, and non-empty existing draft without discard", () => {
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    const responsePackets = controller(sessions, new MemoryPacketPort()).controller;
+    const fresh = new EphemeralWorkbookSessions(() => new Date("2026-08-11T22:00:00.000Z"));
+    const freshController = controller(fresh, new MemoryPacketPort()).controller;
+
+    // Malformed YAML: unterminated flow sequence + tab-indented mapping (js-yaml rejects).
+    expect(() => freshController.importDraftFromYaml(sourcePath, worksheet, "key: [unterminated\n\tother: : : :\n\t\t- - -")).toThrow(/HCC-IMPORT-PARSE/);
+
+    // Wrong record_type
+    const wrongType = responsePackets.exportDraftAsYaml(sourcePath, worksheet).replace("hcc-worksheet-session-draft", "hcc-worksheet-response-packet");
+    expect(() => freshController.importDraftFromYaml(sourcePath, worksheet, wrongType)).toThrow(/HCC-IMPORT-SCHEMA/);
+
+    // Non-empty existing draft is rejected without discard.
+    // Export from `fresh` (which has the answer) so the yaml carries one entry,
+    // and verify that importing into `fresh` with the existing answer requires discard.
+    answer(fresh, "preserved");
+    const yaml = freshController.exportDraftAsYaml(sourcePath, worksheet);
+    expect(() => freshController.importDraftFromYaml(sourcePath, worksheet, yaml)).toThrow(/HCC-IMPORT-NONDISCARD/);
+
+    // discard: true overwrites
+    const result = freshController.importDraftFromYaml(sourcePath, worksheet, yaml, { discard: true });
+    expect(result.discarded).toBe(true);
+    expect(result.imported).toBe(1);
+  });
 });

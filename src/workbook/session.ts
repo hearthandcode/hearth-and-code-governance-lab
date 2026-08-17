@@ -160,6 +160,29 @@ export class EphemeralWorkbookSessions {
     this.notify(session);
   }
 
+  /**
+   * Return the current set of response entries for the source path.
+   * Used by the response-packet controller to enumerate existing entries
+   * for the discard path of `importDraftFromYaml`.
+   */
+  snapshot(sourcePath: string): SessionResponseEntry[] {
+    const session = this.sessions.get(sessionKey(sourcePath));
+    return session ? Array.from(session.responses.values()) : [];
+  }
+
+  /**
+   * Clear all response entries for the source path and notify subscribers.
+   * Used by the response-packet controller when an import operation is
+   * authorized with `discard: true`.
+   */
+  clear(sourcePath: string): void {
+    const key = sessionKey(sourcePath);
+    const session = this.sessions.get(key);
+    if (!session) return;
+    session.responses.clear();
+    this.notify(session);
+  }
+
   discard(sourcePath: string): void {
     const session = this.sessions.get(sessionKey(sourcePath));
     if (!session) return;

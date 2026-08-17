@@ -35,6 +35,8 @@ export interface WorksheetResponsePacketActions {
   saveInitial: (confirmed: boolean, expected?: WorksheetPacketWriteResult) => Promise<WorksheetPacketWriteResult>;
   load: (path: string, digest: string) => Promise<WorksheetPacketLoadResult>;
   saveAmendment: (predecessor: WorksheetPacketReference, reason: string, confirmed: boolean, expected?: WorksheetPacketWriteResult) => Promise<WorksheetPacketWriteResult>;
+  exportDraft: () => string;
+  importDraft: (yaml: string, options?: { discard?: boolean }) => Promise<{ imported: number; discarded: boolean; sessionId: string }>;
 }
 
 export type WorksheetPresentationPreferences = Pick<HccPluginSettings,
@@ -475,8 +477,74 @@ function renderResponsePacketPanel(
       () => { releaseStatus.textContent = "Clipboard copy failed. The complete packet remains visible and selectable below."; }
     );
   };
+  const exportDraftButton = button("Export draft as YAML", () => {
+    const yaml = actions.exportDraft();
+    if (!copyText) {
+      releaseStatus.textContent = `Draft YAML (${yaml.length} chars) is below. Paste it back via 'Import draft from YAML' after reload.`;
+      syncStages();
+      return;
+    }
+    void copyText(yaml).then(
+      () => { releaseStatus.textContent = "Draft YAML was copied to the clipboard. Paste it back via 'Import draft from YAML' after plugin reload or to resume work later."; syncStages(); },
+      () => { releaseStatus.textContent = "Clipboard copy failed. The draft YAML is visible in the output area below."; }
+    );
+  });
+
+  let importArea: HTMLTextAreaElement | null = null;
+  let importDiscardCheckbox: HTMLInputElement | null = null;
+  const importDraftButton = button("Import draft from YAML", () => {
+    if (importArea) {
+      // Toggle off
+      importArea.replaceWith(importArea = (document.createElement("textarea") as HTMLTextAreaElement));
+      importArea = null;
+      if (importDiscardCheckbox) importDiscardCheckbox.disabled = true;
+      releaseStatus.textContent = "Import area closed.";
+      syncStages();
+      return;
+    }
+    importArea = document.createElement("textarea");
+    importArea.className = "hcc-workbook__packet-import-area";
+    importArea.placeholder = "Paste draft YAML here. Required: record_type: hcc-worksheet-session-draft, matching worksheet_binding.worksheet_id.";
+    importArea.rows = 8;
+    importArea.spellcheck = false;
+    importDiscardCheckbox = document.createElement("input");
+    importDiscardCheckbox.type = "checkbox";
+    importDiscardCheckbox.id = `hcc-packet-import-discard-${++packetPanelSequence}`;
+    const importDiscardLabel = document.createElement("label");
+    importDiscardLabel.className = "hcc-workbook__packet-import-discard";
+    importDiscardLabel.htmlFor = importDiscardCheckbox.id;
+    importDiscardLabel.append(importDiscardCheckbox, document.createTextNode("Discard the current in-memory draft before importing (required if any answers are already present)."));
+    const executeImport = button("Execute import", () => run(async () => {
+      const yaml = importArea?.value.trim() ?? "";
+      if (yaml.length === 0) {
+        releaseStatus.textContent = "Paste YAML into the import area before executing.";
+        syncStages();
+        return;
+      }
+      const result = await actions.importDraft(yaml, { discard: importDiscardCheckbox?.checked === true });
+      releaseStatus.textContent = `Imported ${result.imported} answer${result.imported === 1 ? "" : "s"} from session ${result.sessionId || "<unknown>"}${result.discarded ? " (discarded the previous draft)." : "."}`;
+      syncStages();
+    }));
+    const cancelImport = button("Cancel import", () => {
+      if (importArea) importArea.replaceWith(importArea = null as unknown as HTMLTextAreaElement);
+      importArea = null;
+      if (importDiscardCheckbox) importDiscardCheckbox.replaceWith(importDiscardCheckbox = null as unknown as HTMLInputElement);
+      importDiscardCheckbox = null;
+      releaseStatus.textContent = "Import area closed.";
+      syncStages();
+    });
+    releaseStatus.replaceChildren(
+      document.createTextNode("Paste a previously-exported draft YAML and execute. Required: record_type: hcc-worksheet-session-draft with matching worksheet_binding.worksheet_id."),
+      importArea,
+      importDiscardLabel,
+      executeImport,
+      cancelImport
+    );
+    syncStages();
+  });
+
   const copyFinalButton = button("Copy answer packet YAML", copyFinalPacket);
-  releaseActions.append(finalize, copyFinalButton);
+  releaseActions.append(exportDraftButton, importDraftButton, finalize, copyFinalButton);
   body.append(stageList, releaseStatus, releaseActions);
 
   const actionsRow = node("div", "hcc-workbook__packet-actions");

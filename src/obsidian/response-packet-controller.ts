@@ -1,6 +1,12 @@
-import { dump } from "js-yaml";
+import { dump, JSON_SCHEMA, load } from "js-yaml";
 
-import type { EphemeralWorkbookSessions, WorksheetContract, WorksheetPacketReference, WorksheetPacketWriteResult } from "../workbook";
+import type {
+  EphemeralWorkbookSessions,
+  SessionResponseEntry,
+  WorksheetContract,
+  WorksheetPacketReference,
+  WorksheetPacketWriteResult
+} from "../workbook";
 import {
   compileResponseAmendmentPlan,
   compileResponseReloadPlan,
@@ -24,11 +30,94 @@ export interface ResponsePacketControllerOptions {
   refreshInteractions: (sourcePath: string) => void;
 }
 
+export interface ImportDraftResult {
+  /** Number of response entries imported from the YAML. */
+  imported: number;
+  /** True if the in-memory draft was non-empty before import and was discarded. */
+  discarded: boolean;
+  /** session_id from the imported draft (empty string if not present). */
+  sessionId: string;
+}
+
 export class ResponsePacketController {
   private readonly pendingInitialWrites = new Map<string, { plan: ResponseWritePlan; packetFingerprint: string; recordId: string }>();
   private readonly pendingAmendmentWrites = new Map<string, { plan: ResponseAmendmentPlan; packetFingerprint: string; predecessor: WorksheetPacketReference; reason: string }>();
 
   constructor(private readonly options: ResponsePacketControllerOptions) {}
+
+  /**
+   * Serialize the current in-memory draft for the given worksheet as a YAML
+   * document. The shape is the existing DraftSessionProposal produced by
+   * the session manager; round-trip safe via `importDraftFromYaml` below.
+   */
+  exportDraftAsYaml(sourcePath: string, worksheet: WorksheetContract): string {
+    const draft = this.options.sessions.draftProposal(sourcePath, worksheet);
+    return dump(draft, { lineWidth: -1, noRefs: true });
+  }
+
+  /**
+   * Import a previously-exported draft YAML into the in-memory session.
+   * Fail-closed validation:
+   *   - record_type must be 'hcc-worksheet-session-draft'
+   *   - worksheet_binding.worksheet_id must equal the current worksheet id
+   *   - every response.interaction_id must be declared in the current worksheet
+   *   - if the in-memory session already has answers, the caller must pass
+   *     `{ discard: true }` to confirm overwrite; otherwise the import is
+   *     rejected with HCC-IMPORT-NONDISCARD.
+   */
+  importDraftFromYaml(
+    sourcePath: string,
+    worksheet: WorksheetContract,
+    yaml: string,
+    options: { discard?: boolean } = {}
+  ): ImportDraftResult {
+    let value: unknown;
+    try { value = load(yaml, { schema: JSON_SCHEMA }); }
+    catch (error) {
+      throw new Error(`HCC-IMPORT-PARSE: ${error instanceof Error ? error.message : "Unknown YAML parse error"}`);
+    }
+    if (!isRecord(value)) throw new Error("HCC-IMPORT-SCHEMA: the imported YAML must be a YAML object.");
+    if (value.record_type !== "hcc-worksheet-session-draft") {
+      throw new Error(`HCC-IMPORT-SCHEMA: record_type must be 'hcc-worksheet-session-draft' (got '${String(value.record_type)}').`);
+    }
+    const binding = value.worksheet_binding;
+    if (!isRecord(binding) || binding.worksheet_id !== worksheet.id) {
+      throw new Error(`HCC-IMPORT-WORKSHEET: the imported YAML belongs to worksheet '${String(isRecord(binding) ? binding.worksheet_id : "?")}', but the current worksheet is '${worksheet.id}'. Import refused.`);
+    }
+    if (!Array.isArray(value.responses)) throw new Error("HCC-IMPORT-SCHEMA: responses must be a list.");
+    const declared = new Set(worksheet.sections.flatMap((section) => section.interactions));
+    const entries: SessionResponseEntry[] = [];
+    for (let index = 0; index < value.responses.length; index += 1) {
+      const entry = value.responses[index];
+      if (!isRecord(entry)) throw new Error(`HCC-IMPORT-SCHEMA: responses[${index}] must be an object.`);
+      const interactionId = entry.interaction_id;
+      if (typeof interactionId !== "string" || !declared.has(interactionId)) {
+        throw new Error(`HCC-IMPORT-SCOPE: responses[${index}].interaction_id '${String(interactionId)}' is not declared in the current worksheet.`);
+      }
+      if (typeof entry.interaction_kind !== "string" || typeof entry.interaction_version !== "string" || typeof entry.observed_at !== "string") {
+        throw new Error(`HCC-IMPORT-SCHEMA: responses[${index}] is missing interaction_kind / interaction_version / observed_at.`);
+      }
+      entries.push({
+        interaction_id: interactionId,
+        interaction_kind: entry.interaction_kind,
+        interaction_version: entry.interaction_version,
+        response: entry.response,
+        observed_at: entry.observed_at
+      });
+    }
+    const hasCurrent = this.options.sessions.snapshot(sourcePath).length > 0;
+    if (hasCurrent && !options.discard) {
+      throw new Error("HCC-IMPORT-NONDISCARD: the in-memory draft already holds answers; pass discard: true to overwrite.");
+    }
+    if (hasCurrent) this.options.sessions.clear(sourcePath);
+    this.options.sessions.hydrate(sourcePath, entries);
+    this.options.refreshInteractions(sourcePath);
+    return {
+      imported: entries.length,
+      discarded: hasCurrent,
+      sessionId: typeof value.session_id === "string" ? value.session_id : ""
+    };
+  }
 
   async saveInitial(
     sourcePath: string,
@@ -173,6 +262,10 @@ function packetFingerprint(packet: object): string {
   const stable = { ...(packet as Record<string, unknown>) };
   delete stable.prepared_at;
   return JSON.stringify(stable);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 const RESPONSE_WRITE_POLICY = `record_type: hcc-response-write-policy-candidate

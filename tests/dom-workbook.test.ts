@@ -64,7 +64,7 @@ describe("worksheet prepared packet clipboard", () => {
     const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T12:00:00.000Z"));
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, {
-      responsePackets: { saveInitial: vi.fn(), load: vi.fn(), saveAmendment: vi.fn() }
+      responsePackets: { saveInitial: vi.fn(), load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     const controls = Array.from(container.querySelectorAll<HTMLButtonElement>("button"));
     const finalize = controls.find((item) => item.textContent === "Mark answers finalized")!;
@@ -93,7 +93,7 @@ describe("worksheet prepared packet clipboard", () => {
     const copyText = vi.fn<(value: string) => Promise<void>>().mockResolvedValue(undefined);
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", new EphemeralWorkbookSessions(), {
-      copyText, responsePackets: { saveInitial, load: vi.fn(), saveAmendment: vi.fn() }
+      copyText, responsePackets: { saveInitial, load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     const panel = container.querySelector<HTMLDetailsElement>(".hcc-workbook__packet-panel")!;
     const quick = Array.from(container.querySelectorAll<HTMLButtonElement>(".hcc-workbook__primary-actions button"))
@@ -113,7 +113,7 @@ describe("worksheet prepared packet clipboard", () => {
 
     const secondContainer = document.createElement("div"); document.body.append(secondContainer);
     renderWorksheet(secondContainer, parsed.worksheet, "Worksheets/Other.md", new EphemeralWorkbookSessions(), {
-      responsePackets: { saveInitial: vi.fn(), load: vi.fn(), saveAmendment: vi.fn() }
+      responsePackets: { saveInitial: vi.fn(), load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     const advancedPanel = secondContainer.querySelector<HTMLDetailsElement>(".hcc-workbook__packet-panel")!;
     Array.from(secondContainer.querySelectorAll<HTMLButtonElement>(".hcc-workbook__primary-actions button"))
@@ -132,7 +132,7 @@ describe("worksheet prepared packet clipboard", () => {
     const amendmentPreview = { path: "Intake/HCC Responses/next--r2.yaml", digest: `sha256:${"b".repeat(64)}`, recordId: "root", revision: 2, byteLength: 196, readBack: "not-run" as const, result: "previewed" as const, yaml: "revision: 2\n" };
     const saveAmendment = vi.fn().mockImplementation(async (_predecessor: unknown, _reason: string, confirmed: boolean) => confirmed ? { ...amendmentPreview, readBack: "verified", result: "created" } : amendmentPreview);
     const container = document.createElement("div"); document.body.append(container);
-    renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, { copyText, responsePackets: { saveInitial, load, saveAmendment } });
+    renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, { copyText, responsePackets: { saveInitial, load, saveAmendment, exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) } });
     reviewAndFinalize(container);
     const controls = Array.from(container.querySelectorAll<HTMLButtonElement>("button"));
     const preview = controls.find((item) => item.textContent === "Preview new packet")!;
@@ -216,7 +216,7 @@ describe("worksheet prepared packet clipboard", () => {
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, {
       copyText,
-      responsePackets: { saveInitial: vi.fn().mockResolvedValue(preview), load: vi.fn(), saveAmendment: vi.fn() }
+      responsePackets: { saveInitial: vi.fn().mockResolvedValue(preview), load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     reviewAndFinalize(container);
     const fields = Array.from(container.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(".hcc-workbook__packet-field input, .hcc-workbook__packet-field textarea"));
@@ -264,7 +264,7 @@ describe("worksheet prepared packet clipboard", () => {
     const saveInitial = vi.fn().mockResolvedValue(preview);
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, {
-      responsePackets: { saveInitial, load: vi.fn(), saveAmendment: vi.fn() }
+      responsePackets: { saveInitial, load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     reviewAndFinalize(container);
     const confirm = container.querySelector<HTMLInputElement>('.hcc-workbook__packet-confirm input[type="checkbox"]')!;
@@ -286,7 +286,7 @@ describe("worksheet prepared packet clipboard", () => {
     const saveAmendment = vi.fn().mockResolvedValue(successor);
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, {
-      responsePackets: { saveInitial: vi.fn(), load: vi.fn().mockResolvedValue(predecessor), saveAmendment }
+      responsePackets: { saveInitial: vi.fn(), load: vi.fn().mockResolvedValue(predecessor), saveAmendment, exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     const controls = Array.from(container.querySelectorAll<HTMLButtonElement>("button"));
     controls.find((item) => item.textContent === "Load explicit packet")!.click();
@@ -308,7 +308,7 @@ describe("worksheet prepared packet clipboard", () => {
     const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T12:00:00.000Z"));
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, "Worksheets/Copy Proof.md", sessions, {
-      responsePackets: { saveInitial: vi.fn(), load: vi.fn(), saveAmendment: vi.fn() }
+      responsePackets: { saveInitial: vi.fn(), load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     const locator = container.querySelector<HTMLTextAreaElement>(".hcc-workbook__packet-field textarea")!;
     const bubbled: string[] = [];
@@ -423,7 +423,7 @@ governance: { authority_refs: [], review_required: true, verification_required: 
       : preview);
     const container = document.createElement("div"); document.body.append(container);
     renderWorksheet(container, parsed.worksheet, path, sessions, {
-      responsePackets: { saveInitial, load: vi.fn(), saveAmendment: vi.fn() }
+      responsePackets: { saveInitial, load: vi.fn(), saveAmendment: vi.fn(), exportDraft: vi.fn().mockReturnValue(""), importDraft: vi.fn().mockResolvedValue({ imported: 0, discarded: false, sessionId: "" }) }
     });
     reviewAndFinalize(container);
     const controls = Array.from(container.querySelectorAll<HTMLButtonElement>("button"));

@@ -1199,6 +1199,25 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   min-width: 1.25rem;
 }
 
+/* Import-from-YAML area for Fix 5 (round-trip preserve answers). */
+.hcc-workbook__packet-import-area {
+  font-family: var(--hcc-font-mono);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: 0.45rem 0;
+  padding: 0.45rem 0.55rem;
+  resize: vertical;
+  width: 100%;
+}
+
+.hcc-workbook__packet-import-discard {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 0.45rem;
+  margin: 0.35rem 0;
+}
+
 .hcc-workbook__packet-confirm-status {
   color: var(--hcc-text-muted);
   font-size: var(--font-ui-smaller);
