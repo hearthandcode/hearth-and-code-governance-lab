@@ -47,6 +47,63 @@ The candidate states are `unanswered`, `answered`, `deferred`, and `not_applicab
 
 The exhaustive input-kind and configuration catalog is maintained in `src/grammar/types.ts`, `src/grammar/config-validation.ts`, and `src/grammar/catalog.ts`; the readable family projection is [catalog.md](catalog.md).
 
+### Per-kind configuration schema
+
+Unknown config keys fail closed with `HCC-GRAMMAR-UNKNOWN-001`. The accepted keys per kind are:
+
+| Kind | Accepted config keys |
+|---|---|
+| `short_text` | `placeholder`, `min_length`, `max_length` |
+| `long_text` | `placeholder`, `min_length`, `max_length`, `rows` (max 32) |
+| `radio_group` | `options`, `orientation` (`vertical` / `horizontal`) |
+| `multi_select` | `options`, `min_selections`, `max_selections` |
+| `ranked_choice` | `options` only. **No `min_selections` or `max_selections`**; the rendered list is always the full declared option set. |
+| `dropdown` | `options`, `placeholder` |
+| `matrix` | `rows`, `columns`, `selection` (`one` / `many`), `require_all_rows`. **Only `matrix` accepts `columns` and `selection`.** |
+| `rating` | `min`, `max`, `step`, `min_label`, `max_label` |
+| `scale` | `min`, `max`, `step`, `labels` |
+| `percentage` | `min`, `max`, `step` |
+| `currency` | `currency` (ISO 4217), `min`, `max`, `step` |
+| `number` | `min`, `max`, `step`, `unit` |
+| `boolean` | `true_label`, `false_label` |
+| `date` | `min`, `max` (ISO YYYY-MM-DD) |
+| `month` | `min`, `max` (ISO YYYY-MM) |
+| `week` | `min`, `max` (ISO YYYY-Www) |
+| `time` | `min`, `max` (HH:MM), `step_minutes` |
+| `datetime` | `min`, `max` (YYYY-MM-DDTHH:MM) |
+| `duration` | `min_minutes`, `max_minutes`, `step_minutes`, `display_unit` |
+| `date_range` | `min`, `max` (ISO YYYY-MM-DD) |
+| `time_range` | `min`, `max` (HH:MM), `step_minutes` |
+| `email` | `placeholder`, `allow_multiple` |
+| `url` | `placeholder`, `allowed_schemes` |
+| `phone` | `placeholder`, `min_length`, `max_length` |
+| `color` | `format` (`hex`) |
+| `tags` | `suggestions`, `min_items`, `max_items`, `max_length` |
+| `numeric_range` | `min`, `max`, `step`, `unit` |
+| `unit_value` | `units`, `min`, `max`, `step` |
+| `coordinates` | `precision` (max 8), `latitude_label`, `longitude_label` |
+| `file_reference` | `extensions`, `allow_missing` |
+| `repeatable_group` | `fields`, `min_items`, `max_items` |
+| `key_value_list` | `key_label`, `value_label`, `min_items`, `max_items`, `max_length` |
+
+`matrix.columns` and `matrix.selection` are matrix-only. A `long_text`, `short_text`, `multi_select`, `radio_group`, or other non-matrix block that carries `columns:` or `selection:` will be rejected. `multi_select` and `ranked_choice` look similar but differ: `multi_select` accepts `min_selections`/`max_selections`; `ranked_choice` does not.
+
+### Label quoting
+
+Option labels, prompts, and help text are YAML scalars. When a label or prompt uses quoted text to hold punctuation, trailing text after the closing quote is parsed as additional YAML, not as part of the string:
+
+```yaml
+# WRONG — `(quieter)` is parsed as a stray token, not part of the label
+- id: evolving-practice
+  label: "An evolving practice" (quieter)
+
+# RIGHT — the parenthetical is inside the quoted string
+- id: evolving-practice
+  label: "An evolving practice (quieter)"
+```
+
+If a label needs a parenthetical, em-dash, or other punctuation, keep it inside the same quoted string.
+
 ## Worksheet
 
 A worksheet is an `hcc-form` block followed by the interaction blocks whose IDs it names. It does not search the vault for interactions.
