@@ -820,8 +820,10 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 }
 
 .hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"]):checked {
-  border-color: var(--hcc-accent-bright);
-  box-shadow: 0 0 0 2px var(--hcc-surface), 0 0 0 4px var(--hcc-accent);
+  border-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  box-shadow:
+    0 0 0 2px var(--hcc-surface),
+    0 0 0 4px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
 }
 
 .hcc-widget__matrix-choice input:is([type="radio"], [type="checkbox"]):checked::before {
@@ -1301,12 +1303,13 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
      only honor the prefixed form. display: inline-block + position: relative
      sidesteps the blockification that `display: grid` suffers on a flex
      child (the packet-confirm / import-discard labels are `display: flex`).
-     Border uses --hcc-text-muted for WCAG 1.4.11 3:1 contrast. */
+     Border uses --hcc-text-muted for WCAG 1.4.11 3:1 contrast. The
+     border-radius is set in the type-specific rule below to match the
+     option-list pattern; that exact match is what fixed the visual. */
   -webkit-appearance: none;
   appearance: none;
   background: var(--hcc-surface);
   border: 2px solid var(--hcc-text-muted);
-  border-radius: calc(var(--hcc-radius) - 3px);
   display: inline-block;
   flex: 0 0 auto;
   height: 1.25rem;
@@ -1315,6 +1318,11 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   min-width: 1.25rem;
   position: relative;
   width: 1.25rem;
+}
+
+.hcc-workbook__packet-confirm input[type="checkbox"],
+.hcc-workbook__packet-import-discard input[type="checkbox"] {
+  border-radius: calc(var(--hcc-radius) - 3px);
 }
 
 .hcc-workbook__packet-confirm input[type="checkbox"]::before,
