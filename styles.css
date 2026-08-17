@@ -451,37 +451,75 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 }
 
 .hcc-widget__option input:is([type="radio"], [type="checkbox"]) {
+  /* Custom-drawn checkbox/radio using the matrix-choice pattern. Without
+     `appearance: none`, the browser's native checkbox styling takes over
+     on hover and the visual flickers between hover and non-hover states.
+     With this rule, the visual is consistent whether the mouse is over
+     the input or away. */
+  appearance: none;
+  background: var(--hcc-surface);
+  border: 2px solid var(--hcc-border);
+  display: grid;
   flex: 0 0 auto;
   height: 1.3rem;
+  margin: 0;
   min-height: 1.3rem;
   min-width: 1.3rem;
+  place-content: center;
   width: 1.3rem;
+}
+
+.hcc-widget__option input[type="radio"] {
+  border-radius: 50%;
+}
+
+.hcc-widget__option input[type="checkbox"] {
+  border-radius: calc(var(--hcc-radius) - 3px);
+}
+
+/* The checkmark (or the radio dot) is drawn by a pseudo-element that
+   scales up from 0 on :checked. Same approach as the matrix-choice
+   inputs so the visual is consistent across the workbook. */
+.hcc-widget__option input:is([type="radio"], [type="checkbox"])::before {
+  background: var(--hcc-accent-bright);
+  content: "";
+  height: 0.65rem;
+  transform: scale(0);
+  transition: transform 0.15s ease;
+  width: 0.65rem;
+}
+
+.hcc-widget__option input[type="radio"]::before {
+  border-radius: 50%;
+}
+
+.hcc-widget__option input[type="checkbox"]::before {
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 19%, 84% 4%, 39% 69%);
 }
 
 /*
  * Checked-state visual feedback for option-list radios and checkboxes.
- * Without this rule, the input's checked state is invisible outside the
- * ember-circuit theme scope: the browser default checkmark on the input
- * alone is too subtle in dense option lists. The ember-circuit theme
- * below overrides these with its own background mix and inset ring.
+ * The label border + background use the electric-circuit chain; the
+ * input itself uses the same chain for its border, inset ring, and
+ * outer glow. The ::before pseudo-element scales up to draw the
+ * checkmark / radio dot inside the input.
  */
 .hcc-widget__option:has(input:is([type="radio"], [type="checkbox"]):checked) {
-  /* Electric-circuit fallback chain: forge violet (Hearth+Code warm/cool fusion)
-     for the ember-circuit theme, then forge cyan, then the generic accent. */
   border-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent)));
   background: color-mix(in srgb, var(--hcc-surface) 80%, var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent))) 20%);
 }
 
 .hcc-widget__option input:is([type="radio"], [type="checkbox"]):checked {
-  /* Strong visual signal on the control itself: accent-color tint inside,
-     a matching border, and an outer glow ring. Same pattern as the
-     matrix-choice inputs, but using the electric-circuit color chain
-     so the forge aesthetic carries through to dense option lists. */
   accent-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
   border-color: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
   box-shadow:
     inset 0 0 0 2px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright))),
     0 0 0 4px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+}
+
+.hcc-widget__option input:is([type="radio"], [type="checkbox"]):checked::before {
+  background: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  transform: scale(1);
 }
 
 :is(.hcc-theme-ember-circuit, .hcc-ember-circuit, .hcc-plugin-ember-circuit-session) .hcc-widget__option {
@@ -1221,9 +1259,33 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
 }
 
 .hcc-workbook__packet-confirm input[type="checkbox"] {
+  /* Same custom-drawn pattern as the option-list inputs: appearance: none
+     prevents the browser's default hover flicker, a real border is set on
+     the base, and the checkmark is drawn by a ::before pseudo-element
+     that scales up on :checked. */
+  appearance: none;
+  background: var(--hcc-surface);
+  border: 2px solid var(--hcc-border);
+  border-radius: calc(var(--hcc-radius) - 3px);
+  display: grid;
   flex: 0 0 auto;
+  height: 1.25rem;
+  margin: 0;
   min-height: 1.25rem;
   min-width: 1.25rem;
+  place-content: center;
+  width: 1.25rem;
+}
+
+.hcc-workbook__packet-confirm input[type="checkbox"]::before,
+.hcc-workbook__packet-import-discard input[type="checkbox"]::before {
+  background: var(--hcc-accent-bright);
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 19%, 84% 4%, 39% 69%);
+  content: "";
+  height: 0.6rem;
+  transform: scale(0);
+  transition: transform 0.15s ease;
+  width: 0.6rem;
 }
 
 /* Visible :checked state for the per-write confirmation and import-discard
@@ -1235,6 +1297,12 @@ body.hcc-plugin-density-compact :is(.hcc-widget__region, .hcc-workbook__section,
   box-shadow:
     inset 0 0 0 2px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright))),
     0 0 0 4px var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+}
+
+.hcc-workbook__packet-confirm input[type="checkbox"]:checked::before,
+.hcc-workbook__packet-import-discard input[type="checkbox"]:checked::before {
+  background: var(--hcc-signal-violet, var(--hcc-signal-cyan, var(--hcc-accent-bright)));
+  transform: scale(1);
 }
 
 /* Import-from-YAML area for Fix 5 (round-trip preserve answers). */
