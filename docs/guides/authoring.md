@@ -20,7 +20,7 @@ The primary input is shown immediately. Contract/source details and notes remain
 
 ## Ranking
 
-`ranked_choice` always renders the complete declared option set as a reorderable list. Drag items or use Move up/Move down, then choose **Use shown order**. There are no initialization checkboxes.
+`ranked_choice` always renders the complete declared option set as a reorderable list. Drag items or use Move up/Move down, then choose **Use shown order**. There are no initialization checkboxes, and the block accepts only `options` under `config` — it does not accept `min_selections` or `max_selections` (those belong to `multi_select`).
 
 ## Worksheets and workbooks
 
