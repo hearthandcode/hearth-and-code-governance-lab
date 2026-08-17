@@ -104,6 +104,30 @@ Option labels, prompts, and help text are YAML scalars. When a label or prompt u
 
 If a label needs a parenthetical, em-dash, or other punctuation, keep it inside the same quoted string.
 
+### Mandatory `prompt:` on every interaction
+
+Every `hcc-interaction` block MUST include `prompt:` with a non-empty value, regardless of kind. `file_reference`, `repeatable_group`, and other kinds are not exempt. A missing or empty `prompt:` is rejected with `HCC-GRAMMAR-SCHEMA-001 at $.prompt: A non-empty string is required.` Use `prompt: |\n  ...` for multi-line prompts; every continuation line must be indented uniformly.
+
+### Block-scalar indentation
+
+When a YAML block scalar (`key: |` or `key: >`) introduces multi-line content, every continuation line MUST be indented at least as much as the key's content. A continuation line at lower indent is parsed as a sibling key, which the YAML parser rejects as `a multiline key may not be an implicit key` (the plugin surfaces this as `HCC-WORKBOOK-PARSE` for `hcc-form` and `HCC-PARSE-001` for `hcc-interaction`).
+
+```yaml
+# WRONG — lines 2 and 3 have no indent; the parser rejects them.
+purpose: |
+  First content line is correctly indented.
+This continuation line has no indent and breaks the parser.
+  Fourth line is back to indent.
+
+# RIGHT — every continuation line carries the same indent.
+purpose: |
+  First content line is correctly indented.
+  This continuation line is also indented.
+  Third line keeps the indent.
+```
+
+If you generate worksheets programmatically, indent every continuation line by the same amount as the first content line. The companion `hcc-worksheet-authoring` skill ships a `block_scalar(key, text, indent)` helper that does this automatically.
+
 ## Worksheet
 
 A worksheet is an `hcc-form` block followed by the interaction blocks whose IDs it names. It does not search the vault for interactions.

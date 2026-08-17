@@ -245,3 +245,119 @@ describe("candidate renderer catalog", () => {
     });
   });
 });
+
+describe("grammar rule regression — Ember Circuit 0.0.34 intake", () => {
+  // These tests lock in the behavior of the grammar rules that surfaced
+  // during the Ember Circuit worksheet drafting pass. They guard against
+  // regressions that would re-introduce the bugs documented in
+  // docs/reference/grammar.md (GW-R01 .. GW-R11).
+
+  it("rejects ranked_choice with min_selections (only multi_select accepts it)", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "rc-bad",
+      kind: "ranked_choice",
+      prompt: "Rank.",
+      config: {
+        options: [{ id: "a", label: "A" }, { id: "b", label: "B" }],
+        min_selections: 1
+      },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.config.min_selections" && d.code === "HCC-GRAMMAR-UNKNOWN-001")).toBe(true);
+  });
+
+  it("rejects long_text with columns (matrix-only field)", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "lt-bad",
+      kind: "long_text",
+      prompt: "Free text.",
+      config: {
+        rows: 4,
+        columns: [{ id: "x", label: "X" }]
+      },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.config.columns" && d.code === "HCC-GRAMMAR-UNKNOWN-001")).toBe(true);
+  });
+
+  it("rejects matrix column missing label", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "m-bad",
+      kind: "matrix",
+      prompt: "Rate.",
+      config: {
+        rows: [{ id: "r1", label: "Row 1" }],
+        columns: [{ id: "essential" }],
+        selection: "one"
+      },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.config.columns[0].label" && d.code === "HCC-GRAMMAR-SCHEMA-001")).toBe(true);
+  });
+
+  it("rejects file_reference with empty extensions", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "fr-bad",
+      kind: "file_reference",
+      prompt: "Reference.",
+      config: { extensions: [], allow_missing: true },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.config.extensions" && d.code === "HCC-GRAMMAR-CONFIG-001")).toBe(true);
+  });
+
+  it("rejects file_reference missing prompt", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "fr-noprompt",
+      kind: "file_reference",
+      config: { extensions: [".md"], allow_missing: true },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.prompt" && d.code === "HCC-GRAMMAR-SCHEMA-001")).toBe(true);
+  });
+
+  it("rejects multi_select max_selections exceeding option count", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "ms-bad",
+      kind: "multi_select",
+      prompt: "Pick any.",
+      config: {
+        options: [{ id: "a", label: "A" }, { id: "b", label: "B" }, { id: "c", label: "C" }],
+        min_selections: 0,
+        max_selections: 12
+      },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.config.max_selections" && d.code === "HCC-GRAMMAR-CONFIG-001")).toBe(true);
+  });
+
+  it("rejects repeatable_group field missing kind", () => {
+    const body = yaml.dump({
+      version: "0.3-candidate.1",
+      id: "rg-bad",
+      kind: "repeatable_group",
+      prompt: "Add entries.",
+      config: {
+        fields: [
+          { id: "name", label: "Name", kind: "short_text" },
+          { id: "role", label: "Role" }
+        ]
+      },
+      response: { value: null, note: null, state: "unanswered", author: null, responded_at: null }
+    });
+    const parsed = parseCandidateInteraction(body);
+    expect(parsed.diagnostics.some((d) => d.path === "$.config.fields[1].kind" && d.code === "HCC-GRAMMAR-CONFIG-001")).toBe(true);
+  });
+});
