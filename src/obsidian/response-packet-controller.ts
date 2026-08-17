@@ -57,8 +57,11 @@ export class ResponsePacketController {
 
   /**
    * Import a previously-exported draft YAML into the in-memory session.
+   * Accepts two record_type shapes (both have the same `responses` array):
+   *   - 'hcc-worksheet-session-draft'         (mutable in-memory draft)
+   *   - 'hcc-worksheet-response-packet'       (immutable packet on disk)
    * Fail-closed validation:
-   *   - record_type must be 'hcc-worksheet-session-draft'
+   *   - record_type must be one of the two accepted shapes
    *   - worksheet_binding.worksheet_id must equal the current worksheet id
    *   - every response.interaction_id must be declared in the current worksheet
    *   - if the in-memory session already has answers, the caller must pass
@@ -77,8 +80,9 @@ export class ResponsePacketController {
       throw new Error(`HCC-IMPORT-PARSE: ${error instanceof Error ? error.message : "Unknown YAML parse error"}`);
     }
     if (!isRecord(value)) throw new Error("HCC-IMPORT-SCHEMA: the imported YAML must be a YAML object.");
-    if (value.record_type !== "hcc-worksheet-session-draft") {
-      throw new Error(`HCC-IMPORT-SCHEMA: record_type must be 'hcc-worksheet-session-draft' (got '${String(value.record_type)}').`);
+    const recordType = value.record_type;
+    if (recordType !== "hcc-worksheet-session-draft" && recordType !== "hcc-worksheet-response-packet") {
+      throw new Error(`HCC-IMPORT-SCHEMA: record_type must be 'hcc-worksheet-session-draft' or 'hcc-worksheet-response-packet' (got '${String(recordType)}').`);
     }
     const binding = value.worksheet_binding;
     if (!isRecord(binding) || binding.worksheet_id !== worksheet.id) {

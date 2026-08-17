@@ -504,7 +504,7 @@ function renderResponsePacketPanel(
     }
     importArea = document.createElement("textarea");
     importArea.className = "hcc-workbook__packet-import-area";
-    importArea.placeholder = "Paste draft YAML here. Required: record_type: hcc-worksheet-session-draft, matching worksheet_binding.worksheet_id.";
+    importArea.placeholder = "Paste draft OR immutable response packet YAML here. Accepted record_type: hcc-worksheet-session-draft (mutable draft) or hcc-worksheet-response-packet (immutable packet). Both must have matching worksheet_binding.worksheet_id.";
     importArea.rows = 8;
     importArea.spellcheck = false;
     importDiscardCheckbox = document.createElement("input");
@@ -534,7 +534,7 @@ function renderResponsePacketPanel(
       syncStages();
     });
     releaseStatus.replaceChildren(
-      document.createTextNode("Paste a previously-exported draft YAML and execute. Required: record_type: hcc-worksheet-session-draft with matching worksheet_binding.worksheet_id."),
+      document.createTextNode("Paste a previously-exported draft YAML (or an immutable response packet) and execute. Accepted record_type: hcc-worksheet-session-draft (mutable draft) or hcc-worksheet-response-packet (immutable packet); both must have matching worksheet_binding.worksheet_id."),
       importArea,
       importDiscardLabel,
       executeImport,

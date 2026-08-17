@@ -50,6 +50,17 @@ function answer(sessions: EphemeralWorkbookSessions, value: string): void {
   );
 }
 
+/**
+ * Render a YAML scalar value. Strings are quoted; booleans, numbers, and
+ * null pass through; objects/arrays are serialized as JSON.
+ */
+function formatYamlScalar(value: unknown): string {
+  if (value === null || value === undefined) return "null";
+  if (typeof value === "string") return JSON.stringify(value);
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return JSON.stringify(value);
+}
+
 function controller(sessions: EphemeralWorkbookSessions, port: MemoryPacketPort, refreshInteractions = vi.fn()) {
   return {
     controller: new ResponsePacketController({
@@ -220,17 +231,14 @@ describe("response-packet orchestration controller", () => {
   });
 
   it("Fix 5: import rejects malformed YAML, wrong record_type, and non-empty existing draft without discard", () => {
-    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
-    const responsePackets = controller(sessions, new MemoryPacketPort()).controller;
     const fresh = new EphemeralWorkbookSessions(() => new Date("2026-08-11T22:00:00.000Z"));
     const freshController = controller(fresh, new MemoryPacketPort()).controller;
 
     // Malformed YAML: unterminated flow sequence + tab-indented mapping (js-yaml rejects).
     expect(() => freshController.importDraftFromYaml(sourcePath, worksheet, "key: [unterminated\n\tother: : : :\n\t\t- - -")).toThrow(/HCC-IMPORT-PARSE/);
 
-    // Wrong record_type
-    const wrongType = responsePackets.exportDraftAsYaml(sourcePath, worksheet).replace("hcc-worksheet-session-draft", "hcc-worksheet-response-packet");
-    expect(() => freshController.importDraftFromYaml(sourcePath, worksheet, wrongType)).toThrow(/HCC-IMPORT-SCHEMA/);
+    // Wrong record_type: anything other than the two accepted shapes
+    expect(() => freshController.importDraftFromYaml(sourcePath, worksheet, "record_type: some-other-shape\n")).toThrow(/HCC-IMPORT-SCHEMA/);
 
     // Non-empty existing draft is rejected without discard.
     // Export from `fresh` (which has the answer) so the yaml carries one entry,
@@ -243,5 +251,74 @@ describe("response-packet orchestration controller", () => {
     const result = freshController.importDraftFromYaml(sourcePath, worksheet, yaml, { discard: true });
     expect(result.discarded).toBe(true);
     expect(result.imported).toBe(1);
+  });
+
+  it("Fix 6: import also accepts the immutable response packet shape (hcc-worksheet-response-packet)", () => {
+    // The user copied an immutable response packet from the 'Copy answer
+    // packet YAML' button. Before Fix 6, the import rejected it because
+    // the controller only accepted the mutable draft shape. Both shapes
+    // carry the same `responses: SessionResponseEntry[]` field; only the
+    // record_type discriminator and surrounding envelope differ.
+    const sessions = new EphemeralWorkbookSessions(() => new Date("2026-08-11T21:30:00.000Z"));
+    answer(sessions, "Imported from immutable packet");
+    const draft = sessions.draftProposal(sourcePath, worksheet);
+
+    // Build a minimal immutable packet shape that reuses the draft's
+    // responses, so the test is hermetic and exercises the exact shape
+    // a real on-disk packet has. Rendered via a single template literal
+    // so there are no nested .concat().map().join() parens to balance.
+    const responseEntriesYaml = draft.responses.map((entry) => [
+      `  - interaction_id: ${entry.interaction_id}`,
+      `    interaction_kind: ${entry.interaction_kind}`,
+      `    interaction_version: ${entry.interaction_version}`,
+      "    response:",
+      `      value: ${formatYamlScalar((entry.response as { value: unknown } | null | undefined)?.value ?? null)}`,
+      "      note: null",
+      "      state: answered",
+      "      author: null",
+      "      responded_at: null",
+      `    observed_at: '${entry.observed_at}'`
+    ].join("\n")).join("\n");
+    const immutableYaml = [
+      "record_type: hcc-worksheet-response-packet",
+      "contract_version: 0.1-candidate.1",
+      "authority: immutable-intake-candidate-proposal",
+      "immutable: true",
+      `session_id: ${draft.session_id}`,
+      "worksheet_binding:",
+      `  worksheet_id: ${worksheet.id}`,
+      `  worksheet_version: ${worksheet.version}`,
+      `  source_path: ${sourcePath}`,
+      "  source_digest: null",
+      `started_at: '${draft.started_at}'`,
+      `prepared_at: '${draft.prepared_at}'`,
+      "respondent: null",
+      "responses:",
+      responseEntriesYaml,
+      "review:",
+      "  required_complete: true",
+      "  missing_required: []",
+      "  human_gate: required",
+      "downstream:",
+      "  action_candidates: not-generated",
+      "  decision_candidates: not-generated",
+      "  work_item_candidates: not-generated",
+      "  canonical_write_back: prohibited",
+      "effects:",
+      "  persistence: vault-local-create-only",
+      "  submission: prohibited",
+      ""
+    ].join("\n");
+
+    // Import the immutable packet into a fresh session; answers must
+    // populate the in-memory draft for further editing.
+    const fresh = new EphemeralWorkbookSessions(() => new Date("2026-08-11T22:30:00.000Z"));
+    const freshController = controller(fresh, new MemoryPacketPort()).controller;
+    const result = freshController.importDraftFromYaml(sourcePath, worksheet, immutableYaml);
+    expect(result.imported).toBe(1);
+    expect(result.discarded).toBe(false);
+
+    // The imported answers must equal the original draft's answers.
+    expect(fresh.draftProposal(sourcePath, worksheet).responses).toEqual(draft.responses);
   });
 });
